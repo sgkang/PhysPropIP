@@ -3,6 +3,7 @@ class ModifiedColeCole(object):
 	data = None
 	Rm = None
 	Qm = None
+	ss
 	def __init__(self, data, **kwargs):
 		self.data = data
 
