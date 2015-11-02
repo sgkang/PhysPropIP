@@ -1,5 +1,6 @@
 class ModifiedColeCole(object):
 	"""docstring for ModifiedColeCole"""
+#Randy has intervened here! 2015-10-15
 	data = None
 	Rm = None
 	Qm = None
