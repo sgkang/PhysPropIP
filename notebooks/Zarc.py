@@ -1,5 +1,7 @@
 import numpy as np
 
+def readdata():
+    
 def Zarcfun(Rx, Qx, px, freq):
     out = np.zeros_like(freq, dtype=np.complex128)
     out = 1./(1./Rx + Qx*(np.pi*2*freq*1j)**px)
