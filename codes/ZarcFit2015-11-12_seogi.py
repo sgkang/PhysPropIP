@@ -27,7 +27,6 @@ def CalculateImpedance(frequency, Rinf, Rh, Qh, Ph, Rl, Ql, Pl, Re, Qe, Pef, Pei
     Z = Rinf + Zh + Zl + Ze
     return Z
 
-
 class Main(QMainWindow, Ui_MainWindow):
     def __init__(ZarcFitWindow, ):
         super(Main, ZarcFitWindow).__init__()
@@ -40,23 +39,39 @@ class Main(QMainWindow, Ui_MainWindow):
         Rh = 10**(value/100.)
         ZarcFitWindow.SldOutRh.setText("{:.2E}".format(Rh))
         Z = CalculateImpedance(frequency, Rinf, Rh, Qh, Ph, Rl, Ql, Pl, Re, Qe, Pef, Pei)
-        lineCole.set_data(Z.real, Z.imag)
-        figCole.canvas.draw()
+        lineCole.set_data(Z.real, Z.imag)        
+        axCole.draw_artist(axCole.patch)
+        axCole.draw_artist(lineCole)
+        figCole.canvas.update()                
+
         lineBodeMagn.set_ydata(abs(Z))
-        figBodeMagn.canvas.draw()
+        axBodeMagn.draw_artist(axBodeMagn.patch)
+        axBodeMagn.draw_artist(lineBodeMagn)
+        figBodeMagn.canvas.update()                
+
         lineBodePhase.set_ydata(abs(np.angle(Z, deg=True)))
-        figBodePhase.canvas.draw()
+        axBodePhase.draw_artist(axBodePhase.patch)
+        axBodePhase.draw_artist(lineBodePhase)
+        figBodePhase.canvas.update()   
 
     def updateSldOutFh(ZarcFitWindow, value):
         Fh = 10**(value/100.)
         ZarcFitWindow.SldOutFh.setText("{:.2E}".format(10**(value/100.)))
         Z = CalculateImpedance(frequency, Rinf, Rh, Qh, Ph, Rl, Ql, Pl, Re, Qe, Pef, Pei)
         lineCole.set_data(Z.real, Z.imag)
-        figCole.canvas.draw()
+        axCole.draw_artist(axCole.patch)
+        axCole.draw_artist(lineCole)
+        figCole.canvas.update()                
+
         lineBodeMagn.set_ydata(abs(Z))
-        figBodeMagn.canvas.draw()
+        axBodeMagn.draw_artist(axBodeMagn.patch)
+        axBodeMagn.draw_artist(lineBodeMagn)
+        figBodeMagn.canvas.update()                
+
         lineBodePhase.set_ydata(abs(np.angle(Z, deg=True)))
-        figBodePhase.canvas.draw()        
+        axBodePhase.draw_artist(axBodePhase.patch)
+        axBodePhase.draw_artist(lineBodePhase)
+        figBodePhase.canvas.update()                        
 
     def addmplCole(ZarcFitWindow, fig):
         ZarcFitWindow.canvas = FigureCanvas(fig)
@@ -97,7 +112,6 @@ if __name__ == '__main__':
     figCole, axCole = plt.subplots()
 
     # line, = ax.plot(np.random.randn(100))
-    axCole = figCole.add_subplot(111)
     lineCole,= axCole.plot(Z.real, Z.imag, 'ro')
     # axCole.plot(Z.real, Z.imag, 'ro')
     axCole.grid(True)
@@ -105,6 +119,7 @@ if __name__ == '__main__':
     axCole.set_xlabel("Real [Ohm]")
     axCole.set_ylabel("Imag [Ohm]")
     axCole.hold (False)
+    plt.show(block=False)
     
     figBodeMagn, axBodeMagn = plt.subplots()
     lineBodeMagn, = axBodeMagn.loglog(frequency, abs(Z), 'ro')
@@ -113,6 +128,7 @@ if __name__ == '__main__':
     axBodeMagn.set_xlabel("Frequency [Hz]")
     axBodeMagn.set_ylabel("Total Impedance [Ohm]")
     axBodeMagn.hold (False)
+    plt.show(block=False)
  
     figBodePhase, axBodePhase = plt.subplots()
     lineBodePhase,= axBodePhase.loglog(frequency, abs(np.angle(Z, deg=True)), 'ro')    
@@ -121,6 +137,7 @@ if __name__ == '__main__':
     axBodePhase.set_xlabel("Frequency [Hz]")
     axBodePhase.set_ylabel("Phase [deg]")
     axBodePhase.hold (False)    
+    plt.show(block=False)
  
     app = QtGui.QApplication(sys.argv)
     main = Main()
