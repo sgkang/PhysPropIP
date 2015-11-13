@@ -111,15 +111,12 @@ if __name__ == '__main__':
 
     figCole, axCole = plt.subplots()
 
-    # line, = ax.plot(np.random.randn(100))
     lineCole,= axCole.plot(Z.real, Z.imag, 'ro')
-    # axCole.plot(Z.real, Z.imag, 'ro')
     axCole.grid(True)
     axCole.invert_yaxis()
     axCole.set_xlabel("Real [Ohm]")
     axCole.set_ylabel("Imag [Ohm]")
     axCole.hold (False)
-    plt.show(block=False)
     
     figBodeMagn, axBodeMagn = plt.subplots()
     lineBodeMagn, = axBodeMagn.loglog(frequency, abs(Z), 'ro')
@@ -128,7 +125,6 @@ if __name__ == '__main__':
     axBodeMagn.set_xlabel("Frequency [Hz]")
     axBodeMagn.set_ylabel("Total Impedance [Ohm]")
     axBodeMagn.hold (False)
-    plt.show(block=False)
  
     figBodePhase, axBodePhase = plt.subplots()
     lineBodePhase,= axBodePhase.loglog(frequency, abs(np.angle(Z, deg=True)), 'ro')    
@@ -137,7 +133,6 @@ if __name__ == '__main__':
     axBodePhase.set_xlabel("Frequency [Hz]")
     axBodePhase.set_ylabel("Phase [deg]")
     axBodePhase.hold (False)    
-    plt.show(block=False)
  
     app = QtGui.QApplication(sys.argv)
     main = Main()
