@@ -3,6 +3,7 @@ import sys
 from PyQt4 import QtGui
 from PyQt4.uic import loadUiType
 from matplotlib.figure import Figure
+import matplotlib
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qt4agg import (
     FigureCanvasQTAgg as FigureCanvas,
@@ -39,19 +40,21 @@ class Main(QMainWindow, Ui_MainWindow):
         Rh = 10**(value/100.)
         ZarcFitWindow.SldOutRh.setText("{:.2E}".format(Rh))
         Z = CalculateImpedance(frequency, Rinf, Rh, Qh, Ph, Rl, Ql, Pl, Re, Qe, Pef, Pei)
-        lineCole.set_data(Z.real, Z.imag)        
-        axCole.draw_artist(axCole.patch)
+        lineCole.set_data(Z.real, Z.imag) 
+        axCole.draw_artist(axCole.patch)        
         axCole.draw_artist(lineCole)
-        figCole.canvas.update()                
+        axCole.grid(True)
+        figCole.canvas.update()       
 
         lineBodeMagn.set_ydata(abs(Z))
         axBodeMagn.draw_artist(axBodeMagn.patch)
-        axBodeMagn.draw_artist(lineBodeMagn)
-        figBodeMagn.canvas.update()                
+        axBodeMagn.draw_artist(lineBodeMagn)        
+        figBodeMagn.canvas.update()          
+
 
         lineBodePhase.set_ydata(abs(np.angle(Z, deg=True)))
         axBodePhase.draw_artist(axBodePhase.patch)
-        axBodePhase.draw_artist(lineBodePhase)
+        axBodePhase.draw_artist(lineBodePhase)        
         figBodePhase.canvas.update()   
 
     def updateSldOutFh(ZarcFitWindow, value):
@@ -61,17 +64,20 @@ class Main(QMainWindow, Ui_MainWindow):
         lineCole.set_data(Z.real, Z.imag)
         axCole.draw_artist(axCole.patch)
         axCole.draw_artist(lineCole)
+        plt.grid(True)
         figCole.canvas.update()                
 
         lineBodeMagn.set_ydata(abs(Z))
         axBodeMagn.draw_artist(axBodeMagn.patch)
         axBodeMagn.draw_artist(lineBodeMagn)
-        figBodeMagn.canvas.update()                
+        figBodeMagn.canvas.update()    
 
         lineBodePhase.set_ydata(abs(np.angle(Z, deg=True)))
         axBodePhase.draw_artist(axBodePhase.patch)
-        axBodePhase.draw_artist(lineBodePhase)
-        figBodePhase.canvas.update()                        
+        axBodePhase.draw_artist(lineBodePhase)        
+        figBodePhase.canvas.update()    
+        
+                      
 
     def addmplCole(ZarcFitWindow, fig):
         ZarcFitWindow.canvas = FigureCanvas(fig)
@@ -93,6 +99,10 @@ class Main(QMainWindow, Ui_MainWindow):
        
  
 if __name__ == '__main__':
+
+    matplotlib.rcParams.update({'font.size': 14})
+    matplotlib.rcParams.update({'grid.color': 'white', 'grid.linewidth':1})
+
     Rinf = 1.E4
     Rh = 1.E5
     Qh = 2.E-10
@@ -111,28 +121,31 @@ if __name__ == '__main__':
 
     figCole, axCole = plt.subplots()
 
-    lineCole,= axCole.plot(Z.real, Z.imag, 'ro')
+    lineCole,= axCole.plot(Z.real, Z.imag, 'deepskyblue', lw=2)
     axCole.grid(True)
     axCole.invert_yaxis()
     axCole.set_xlabel("Real [Ohm]")
     axCole.set_ylabel("Imag [Ohm]")
-    axCole.hold (False)
+    # axCole.hold (False)
+    axCole.patch.set_facecolor('black')
     
     figBodeMagn, axBodeMagn = plt.subplots()
-    lineBodeMagn, = axBodeMagn.loglog(frequency, abs(Z), 'ro')
+    lineBodeMagn, = axBodeMagn.loglog(frequency, abs(Z), 'deepskyblue', lw=2)
     axBodeMagn.grid(True)
     axBodeMagn.invert_xaxis()
     axBodeMagn.set_xlabel("Frequency [Hz]")
     axBodeMagn.set_ylabel("Total Impedance [Ohm]")
-    axBodeMagn.hold (False)
+    # axBodeMagn.hold (False)
+    axBodeMagn.patch.set_facecolor('black')
  
     figBodePhase, axBodePhase = plt.subplots()
-    lineBodePhase,= axBodePhase.loglog(frequency, abs(np.angle(Z, deg=True)), 'ro')    
+    lineBodePhase,= axBodePhase.loglog(frequency, abs(np.angle(Z, deg=True)), 'deepskyblue', lw=2)    
     axBodePhase.grid(True)
     axBodePhase.invert_xaxis()
     axBodePhase.set_xlabel("Frequency [Hz]")
     axBodePhase.set_ylabel("Phase [deg]")
-    axBodePhase.hold (False)    
+    # axBodePhase.hold (False)    
+    axBodePhase.patch.set_facecolor('black')
  
     app = QtGui.QApplication(sys.argv)
     main = Main()
