@@ -26,10 +26,10 @@ class Main(QMainWindow, Ui_MainWindow):
         axBodeMagn = figCole.add_subplot( gs[:3,4:])
         axBodePhase = figCole.add_subplot(gs[4:,4:])
 
-        if ZarcFitWindow.radioButtonSerial.isChecked():
-            Z = ZarcFitWindow.zarc.Zseries(frequency)  
-        else:
-            Z = ZarcFitWindow.zarc.Zparallel(frequency)  
+        # if ZarcFitWindow.radioButtonSerial.isChecked():
+        Z = ZarcFitWindow.zarc.Zseries(frequency)  
+        # else:
+        #     Z = ZarcFitWindow.zarc.Zparallel(frequency)  
 
         lineColeobs,= axCole.plot(obs.real, obs.imag, 'kx-', lw=3)
         lineCole,= axCole.plot(Z.real, Z.imag, 'ro')    
@@ -131,6 +131,7 @@ class Main(QMainWindow, Ui_MainWindow):
         ZarcFitWindow.updateFigs(Z) 
 
     def updateSldOutRh(ZarcFitWindow, value):
+
         Rh = 10**(value/100.)
         ZarcFitWindow.SldOutRh.setText("{:.2E}".format(Rh))
         ZarcFitWindow.zarc.Rh = Rh
@@ -284,7 +285,9 @@ class Main(QMainWindow, Ui_MainWindow):
         else:
             Z = ZarcFitWindow.zarc.Zparallel(ZarcFitWindow.frequency)  
         ZarcFitWindow.addToolBar(ZarcFitWindow.toolbar)     
-      
+
+    def linearmap():
+        re      
  
 if __name__ == '__main__':
     Rinf = 1.E4
