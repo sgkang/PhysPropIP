@@ -3,6 +3,7 @@ import sys
 from PyQt4 import QtGui
 from PyQt4.uic import loadUiType
 from matplotlib.figure import Figure
+import matplotlib.gridspec as gridspec
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qt4agg import (
     FigureCanvasQTAgg as FigureCanvas,
@@ -12,20 +13,63 @@ from Zarcfit import *
 Ui_MainWindow, QMainWindow = loadUiType('ZarcFit2015-11-13.ui')  
 
 class Main(QMainWindow, Ui_MainWindow):
+    
 
-    def __init__(ZarcFitWindow, zarc, obs, frequency, figCole, axCole, axBodeMagn, axBodePhase, lineCole, lineBodeMagn, lineBodePhase):
+    def __init__(ZarcFitWindow, zarc, obs, frequency):
         ZarcFitWindow.zarc = zarc
         ZarcFitWindow.obs = obs
         ZarcFitWindow.frequency = frequency
+
+        figCole = Figure()
+        gs = gridspec.GridSpec(7, 7)
+        axCole = figCole.add_subplot(gs[:, :3])
+        axBodeMagn = figCole.add_subplot( gs[:3,4:])
+        axBodePhase = figCole.add_subplot(gs[4:,4:])
+
+        Z = zarc.Zseries(frequency)
+
+        lineColeobs,= axCole.plot(obs.real, obs.imag, 'kx-', lw=3)
+        lineCole,= axCole.plot(Z.real, Z.imag, 'ro')    
+        # axCole.grid(True)
+        axCole.invert_yaxis()
+        axCole.set_xlabel("Real [Ohm]")
+        axCole.set_ylabel("Imag [Ohm]")
+        axCole.hold (False)
+        
+                
+        lineBodeMagnobs, = axBodeMagn.loglog(frequency, abs(obs), 'kx-', lw=3)
+        lineBodeMagn, = axBodeMagn.loglog(frequency, abs(Z), 'ro')    
+        # axBodeMagn.grid(True)
+        axBodeMagn.invert_xaxis()
+        axBodeMagn.set_xlabel("Frequency [Hz]")
+        axBodeMagn.set_ylabel("Total Impedance [Ohm]")
+        axBodeMagn.legend(("Obs","Pred"), bbox_to_anchor=(1.25, 1.), fontsize = 10)
+        axBodeMagn.hold (False)
+     
+                    
+        lineBodePhaseobs,= axBodePhase.loglog(frequency, abs(np.angle(obs, deg=True)), 'kx-', lw=3)    
+        lineBodePhase,= axBodePhase.loglog(frequency, abs(np.angle(Z, deg=True)), 'ro')        
+        # axBodePhase.grid(True)
+        axBodePhase.invert_xaxis()
+        axBodePhase.set_xlabel("Frequency [Hz]")
+        axBodePhase.set_ylabel("Phase [deg]")
+        axBodePhase.hold (False)            
+
         ZarcFitWindow.figCole = figCole
         ZarcFitWindow.axCole = axCole
         ZarcFitWindow.axBodeMagn = axBodeMagn
-        ZarcFitWindow.axBodePhase = axBodeMagn
+        ZarcFitWindow.axBodePhase = axBodePhase
+        
         ZarcFitWindow.lineCole = lineCole
         ZarcFitWindow.lineBodeMagn = lineBodeMagn
-        ZarcFitWindow.lineBodePhase = lineBodePhase
+        ZarcFitWindow.lineBodePhase = lineBodePhase        
 
-        super(Main, ZarcFitWindow).__init__()        
+        ZarcFitWindow.lineColeobs = lineColeobs
+        ZarcFitWindow.lineBodeMagnobs = lineBodeMagnobs
+        ZarcFitWindow.lineBodePhaseobs = lineBodePhaseobs
+
+        super(Main, ZarcFitWindow).__init__()               
+        
         ZarcFitWindow.setupUi(ZarcFitWindow)        
         ZarcFitWindow.SliderLinf.valueChanged.connect(ZarcFitWindow.updateSldOutLinf)
         ZarcFitWindow.SliderRinf.valueChanged.connect(ZarcFitWindow.updateSldOutRinf)
@@ -44,23 +88,24 @@ class Main(QMainWindow, Ui_MainWindow):
         ZarcFitWindow.SliderPei.valueChanged.connect(ZarcFitWindow.updateSldOutPei)
  
     def updateFigs(ZarcFitWindow,Z):
-        lineCole.set_data(Z.real, Z.imag)
-        lineColeobs.set_data(ZarcFitWindow.obs.real, ZarcFitWindow.obs.imag)
-        axCole.draw_artist(axCole.patch)        
-        axCole.draw_artist(lineCole)
-        axCole.draw_artist(lineColeobs)
-        axCole.grid(True)
-        lineBodeMagn.set_ydata(abs(Z))
-        lineBodeMagnobs.set_ydata(abs(ZarcFitWindow.obs))
-        axBodeMagn.draw_artist(axBodeMagn.patch)
-        axBodeMagn.draw_artist(lineBodeMagn)
-        axBodeMagn.draw_artist(lineBodeMagnobs)        
-        lineBodePhase.set_ydata(abs(np.angle(Z, deg=True)))
-        lineBodePhaseobs.set_ydata(abs(np.angle(ZarcFitWindow.obs, deg=True)))
-        axBodePhase.draw_artist(axBodePhase.patch)
-        axBodePhase.draw_artist(lineBodePhase)        
-        axBodePhase.draw_artist(lineBodePhaseobs)        
-        figCole.canvas.update()     
+        ZarcFitWindow.lineCole.set_data(Z.real, Z.imag)
+        ZarcFitWindow.lineColeobs.set_data(ZarcFitWindow.obs.real, ZarcFitWindow.obs.imag)
+        ZarcFitWindow.axCole.draw_artist(ZarcFitWindow.axCole.patch)        
+        ZarcFitWindow.axCole.draw_artist(ZarcFitWindow.lineCole)
+        ZarcFitWindow.axCole.draw_artist(ZarcFitWindow.lineColeobs)
+
+        ZarcFitWindow.lineBodeMagn.set_ydata(abs(Z))
+        ZarcFitWindow.lineBodeMagnobs.set_ydata(abs(ZarcFitWindow.obs))
+        ZarcFitWindow.axBodeMagn.draw_artist(ZarcFitWindow.axBodeMagn.patch)
+        ZarcFitWindow.axBodeMagn.draw_artist(ZarcFitWindow.lineBodeMagn)
+        ZarcFitWindow.axBodeMagn.draw_artist(ZarcFitWindow.lineBodeMagnobs)        
+
+        ZarcFitWindow.lineBodePhase.set_ydata(abs(np.angle(Z, deg=True)))
+        ZarcFitWindow.lineBodePhaseobs.set_ydata(abs(np.angle(ZarcFitWindow.obs, deg=True)))
+        ZarcFitWindow.axBodePhase.draw_artist(ZarcFitWindow.axBodePhase.patch)
+        ZarcFitWindow.axBodePhase.draw_artist(ZarcFitWindow.lineBodePhase)        
+        ZarcFitWindow.axBodePhase.draw_artist(ZarcFitWindow.lineBodePhaseobs)        
+        ZarcFitWindow.figCole.canvas.update()     
 
     def updateSldOutLinf(ZarcFitWindow, value):
         Linf = 10**(value/100.)
@@ -172,8 +217,8 @@ class Main(QMainWindow, Ui_MainWindow):
         ZarcFitWindow.updateFigs(Z) 
         
 
-    def addmplCole(ZarcFitWindow, fig):
-        ZarcFitWindow.canvas = FigureCanvas(fig)
+    def addmplCole(ZarcFitWindow):
+        ZarcFitWindow.canvas = FigureCanvas(ZarcFitWindow.figCole)
         ZarcFitWindow.mplCole.addWidget(ZarcFitWindow.canvas)
         ZarcFitWindow.canvas.draw()  
         ZarcFitWindow.toolbar = NavigationToolbar(ZarcFitWindow.canvas, ZarcFitWindow, coordinates=True)
@@ -203,43 +248,9 @@ if __name__ == '__main__':
     obs = temp[:,4]+1j*temp[:,5]
     frequency = temp[:,0].copy()
     zarc = Zarcfit(obs, frequency)
-    zarc.SetParametersSeries(0., Rinf, Rh, Fh, Ph, Rl, Fl, Pl, Rm, Fm, Pm, Re, Qe, Pef, Pei)
-    Z = zarc.Zseries(frequency)
-
-    figCole = Figure()
-    axCole = figCole.add_subplot(121)
-    lineColeobs,= axCole.plot(obs.real, obs.imag, 'k-', lw=3)
-    lineCole,= axCole.plot(Z.real, Z.imag, 'ro')    
-    axCole.grid(True)
-    axCole.invert_yaxis()
-    axCole.set_xlabel("Real [Ohm]")
-    axCole.set_ylabel("Imag [Ohm]")
-    axCole.hold (False)
-    
-    axBodeMagn = figCole.add_subplot(222)
-    lineBodeMagnobs, = axBodeMagn.loglog(frequency, abs(obs), 'k-', lw=3)
-    lineBodeMagn, = axBodeMagn.loglog(frequency, abs(Z), 'ro')    
-    axBodeMagn.grid(True)
-    axBodeMagn.invert_xaxis()
-    axBodeMagn.set_xlabel("Frequency [Hz]")
-    axBodeMagn.set_ylabel("Total Impedance [Ohm]")
-    axBodeMagn.legend(("Obs","Pred"), bbox_to_anchor=(1.25, 1.), fontsize = 10)
-    axBodeMagn.hold (False)
- 
-    axBodePhase = figCole.add_subplot(224)
-    lineBodePhaseobs,= axBodePhase.loglog(frequency, abs(np.angle(obs, deg=True)), 'k-', lw=3)    
-    lineBodePhase,= axBodePhase.loglog(frequency, abs(np.angle(Z, deg=True)), 'ro')        
-    axBodePhase.grid(True)
-    axBodePhase.invert_xaxis()
-    axBodePhase.set_xlabel("Frequency [Hz]")
-    axBodePhase.set_ylabel("Phase [deg]")
-    axBodePhase.hold (False)    
-
-
- 
+    zarc.SetParametersSeries(0., Rinf, Rh, Fh, Ph, Rl, Fl, Pl, Rm, Fm, Pm, Re, Qe, Pef, Pei)     
     app = QtGui.QApplication(sys.argv)
-    main = Main(zarc, obs, frequency, figCole, axCole, axBodeMagn, axBodePhase, lineCole, lineBodeMagn, lineBodePhase)
-    main.addmplCole(figCole)
-
+    main = Main(zarc, obs, frequency)
+    main.addmplCole()
     main.show()
     sys.exit(app.exec_())   
