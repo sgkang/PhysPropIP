@@ -110,7 +110,7 @@ class Main(QMainWindow, Ui_MainWindow):
         ZarcFitWindow.figCole.canvas.update()     
 
     def updateSldOutLinf(ZarcFitWindow, value):
-        Linf = 10**(value/100.)
+        Linf = 10**(value/1000.)
         ZarcFitWindow.SldOutLinf.setText("{:.2E}".format(Linf))
         ZarcFitWindow.zarc.Linf = Linf
         if ZarcFitWindow.radioButtonSerial.isChecked():
@@ -120,7 +120,7 @@ class Main(QMainWindow, Ui_MainWindow):
         ZarcFitWindow.updateFigs(Z) 
         
     def updateSldOutRinf(ZarcFitWindow, value):
-        Rinf = 10**(value/100.)
+        Rinf = 10**(value/1000.)
         ZarcFitWindow.SldOutRinf.setText("{:.2E}".format(Rinf))
         ZarcFitWindow.zarc.Rinf = Rinf
         Z = ZarcFitWindow.zarc.Zseries(ZarcFitWindow.frequency)        
@@ -132,7 +132,7 @@ class Main(QMainWindow, Ui_MainWindow):
 
     def updateSldOutRh(ZarcFitWindow, value):
 
-        Rh = 10**(value/100.)
+        Rh = 10**(value/1000.)
         ZarcFitWindow.SldOutRh.setText("{:.2E}".format(Rh))
         ZarcFitWindow.zarc.Rh = Rh
         Z = ZarcFitWindow.zarc.Zseries(ZarcFitWindow.frequency)
@@ -143,7 +143,7 @@ class Main(QMainWindow, Ui_MainWindow):
         ZarcFitWindow.updateFigs(Z)                 
 
     def updateSldOutFh(ZarcFitWindow, value):
-        Fh = 10**(value/100.)
+        Fh = 10**(value/1000.)
         ZarcFitWindow.SldOutFh.setText("{:.2E}".format(Fh))
         ZarcFitWindow.zarc.Fh = Fh
         Z = ZarcFitWindow.zarc.Zseries(ZarcFitWindow.frequency)        
@@ -165,7 +165,7 @@ class Main(QMainWindow, Ui_MainWindow):
         ZarcFitWindow.updateFigs(Z) 
         
     def updateSldOutRm(ZarcFitWindow, value):
-        Rm = 10**(value/100.)
+        Rm = 10**(value/1000.)
         ZarcFitWindow.SldOutRm.setText("{:.2E}".format(Rm))
         ZarcFitWindow.zarc.Rm = Rm
         Z = ZarcFitWindow.zarc.Zseries(ZarcFitWindow.frequency)        
@@ -176,7 +176,7 @@ class Main(QMainWindow, Ui_MainWindow):
         ZarcFitWindow.updateFigs(Z) 
 
     def updateSldOutFm(ZarcFitWindow, value):
-        Fm = 10**(value/100.)
+        Fm = 10**(value/1000.)
         ZarcFitWindow.SldOutFm.setText("{:.2E}".format(Fm))
         ZarcFitWindow.zarc.Fm = Fm
         Z = ZarcFitWindow.zarc.Zseries(ZarcFitWindow.frequency)        
@@ -198,7 +198,7 @@ class Main(QMainWindow, Ui_MainWindow):
         ZarcFitWindow.updateFigs(Z) 
         
     def updateSldOutRl(ZarcFitWindow, value):
-        Rl = 10**(value/100.)
+        Rl = 10**(value/1000.)
         ZarcFitWindow.SldOutRl.setText("{:.2E}".format(Rl))
         ZarcFitWindow.zarc.Rl = Rl
         Z = ZarcFitWindow.zarc.Zseries(ZarcFitWindow.frequency)        
@@ -209,7 +209,7 @@ class Main(QMainWindow, Ui_MainWindow):
         ZarcFitWindow.updateFigs(Z) 
 
     def updateSldOutFl(ZarcFitWindow, value):
-        Fl = 10**(value/100.)
+        Fl = 10**(value/1000.)
         ZarcFitWindow.SldOutFl.setText("{:.2E}".format(Fl))
         ZarcFitWindow.zarc.Fl = Fl
         Z = ZarcFitWindow.zarc.Zseries(ZarcFitWindow.frequency)        
@@ -231,7 +231,7 @@ class Main(QMainWindow, Ui_MainWindow):
         ZarcFitWindow.updateFigs(Z) 
 
     def updateSldOutRe(ZarcFitWindow, value):
-        Re = 10**(value/100.)
+        Re = 10**(value/1000.)
         ZarcFitWindow.SldOutRe.setText("{:.2E}".format(Re))
         ZarcFitWindow.zarc.Re = Re
         Z = ZarcFitWindow.zarc.Zseries(ZarcFitWindow.frequency)        
@@ -242,7 +242,7 @@ class Main(QMainWindow, Ui_MainWindow):
         ZarcFitWindow.updateFigs(Z) 
 
     def updateSldOutQe(ZarcFitWindow, value):
-        Qe = 10**(value/100.)
+        Qe = 10**(value/1000.)
         ZarcFitWindow.SldOutQe.setText("{:.2E}".format(Qe))
         ZarcFitWindow.zarc.Qe = Qe
         Z = ZarcFitWindow.zarc.Zseries(ZarcFitWindow.frequency)        
