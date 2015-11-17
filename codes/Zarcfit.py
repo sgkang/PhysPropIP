@@ -4,7 +4,7 @@ def RplusCPEfun(Rx, Qx, px, frequency):
 	out = np.zeros_like(frequency, dtype=np.complex128)
 	out = Rx + 1./(Qx*(np.pi*2*frequency*1j)**px)
 	return out	
-
+    
 def Zarcfun(Rx, Qx, px, frequency):
 	out = np.zeros_like(frequency, dtype=np.complex128)
 	out = 1./(1./Rx + Qx*(np.pi*2*frequency*1j)**px)
@@ -38,6 +38,12 @@ class Zarcfit(object):
 	Pef = None	
 	Pei = None	
 
+	Zinf = None
+	Zh   = None
+	Zm   = None
+	Zl   = None
+	Ze   = None	
+
 	# Parallel circuit parameters
 	R0  = None
 	pRh = None
@@ -46,6 +52,10 @@ class Zarcfit(object):
 	pQm = None
 	pRl = None
 	pQl = None
+
+	pZh = None
+	pZm = None
+	pZl = None
 
 	def __init__(self, obs, frequency, **kwargs):
 		self.obs = obs
