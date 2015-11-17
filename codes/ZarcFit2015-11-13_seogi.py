@@ -208,8 +208,8 @@ if __name__ == '__main__':
 
     figCole = Figure()
     axCole = figCole.add_subplot(121)
-    lineCole,= axCole.plot(Z.real, Z.imag, 'ro')
     lineColeobs,= axCole.plot(obs.real, obs.imag, 'k-', lw=3)
+    lineCole,= axCole.plot(Z.real, Z.imag, 'ro')    
     axCole.grid(True)
     axCole.invert_yaxis()
     axCole.set_xlabel("Real [Ohm]")
@@ -217,22 +217,25 @@ if __name__ == '__main__':
     axCole.hold (False)
     
     axBodeMagn = figCole.add_subplot(222)
-    lineBodeMagn, = axBodeMagn.loglog(frequency, abs(Z), 'ro')
     lineBodeMagnobs, = axBodeMagn.loglog(frequency, abs(obs), 'k-', lw=3)
+    lineBodeMagn, = axBodeMagn.loglog(frequency, abs(Z), 'ro')    
     axBodeMagn.grid(True)
     axBodeMagn.invert_xaxis()
     axBodeMagn.set_xlabel("Frequency [Hz]")
     axBodeMagn.set_ylabel("Total Impedance [Ohm]")
+    axBodeMagn.legend(("Obs","Pred"), bbox_to_anchor=(1.25, 1.), fontsize = 10)
     axBodeMagn.hold (False)
  
     axBodePhase = figCole.add_subplot(224)
-    lineBodePhase,= axBodePhase.loglog(frequency, abs(np.angle(Z, deg=True)), 'ro')    
     lineBodePhaseobs,= axBodePhase.loglog(frequency, abs(np.angle(obs, deg=True)), 'k-', lw=3)    
+    lineBodePhase,= axBodePhase.loglog(frequency, abs(np.angle(Z, deg=True)), 'ro')        
     axBodePhase.grid(True)
     axBodePhase.invert_xaxis()
     axBodePhase.set_xlabel("Frequency [Hz]")
     axBodePhase.set_ylabel("Phase [deg]")
     axBodePhase.hold (False)    
+
+
  
     app = QtGui.QApplication(sys.argv)
     main = Main(zarc, obs, frequency, figCole, axCole, axBodeMagn, axBodePhase, lineCole, lineBodeMagn, lineBodePhase)
