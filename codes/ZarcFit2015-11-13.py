@@ -32,9 +32,40 @@ class Main(QMainWindow, Ui_MainWindow):
     def __init__(ZarcFitWindow, ):
         super(Main, ZarcFitWindow).__init__()
         ZarcFitWindow.setupUi(ZarcFitWindow)        
+        ZarcFitWindow.SliderLinf.valueChanged.connect(ZarcFitWindow.updateSldOutLinf)
+        ZarcFitWindow.SliderRinf.valueChanged.connect(ZarcFitWindow.updateSldOutRinf)
         ZarcFitWindow.SliderRh.valueChanged.connect(ZarcFitWindow.updateSldOutRh)
         ZarcFitWindow.SliderFh.valueChanged.connect(ZarcFitWindow.updateSldOutFh)
+        ZarcFitWindow.SliderPh.valueChanged.connect(ZarcFitWindow.updateSldOutPh)
+        ZarcFitWindow.SliderRm.valueChanged.connect(ZarcFitWindow.updateSldOutRm)
+        ZarcFitWindow.SliderFm.valueChanged.connect(ZarcFitWindow.updateSldOutFm)
+        ZarcFitWindow.SliderPm.valueChanged.connect(ZarcFitWindow.updateSldOutPm)
+        ZarcFitWindow.SliderRl.valueChanged.connect(ZarcFitWindow.updateSldOutRl)
+        ZarcFitWindow.SliderFl.valueChanged.connect(ZarcFitWindow.updateSldOutFl)
+        ZarcFitWindow.SliderPl.valueChanged.connect(ZarcFitWindow.updateSldOutPl)
+        ZarcFitWindow.SliderRe.valueChanged.connect(ZarcFitWindow.updateSldOutRe)
+        ZarcFitWindow.SliderQe.valueChanged.connect(ZarcFitWindow.updateSldOutQe)
+        ZarcFitWindow.SliderPef.valueChanged.connect(ZarcFitWindow.updateSldOutPef)
+        ZarcFitWindow.SliderPei.valueChanged.connect(ZarcFitWindow.updateSldOutPei)
 
+
+    def updateSldOutLinf(ZarcFitWindow, value):
+        Linf = 10**(value/100.)
+        ZarcFitWindow.SldOutLinf.setText("{:.2E}".format(Linf))
+        Z = CalculateImpedance(frequency, Rinf, Rh, Qh, Ph, Rl, Ql, Pl, Re, Qe, Pef, Pei)
+        lineCole.set_data(Z.real, Z.imag)
+        lineBodeMagn.set_ydata(abs(Z))
+        lineBodePhase.set_ydata(abs(np.angle(Z, deg=True)))
+        figCole.canvas.draw()
+        
+    def updateSldOutRinf(ZarcFitWindow, value):
+        Rinf = 10**(value/100.)
+        ZarcFitWindow.SldOutRinf.setText("{:.2E}".format(Rinf))
+        Z = CalculateImpedance(frequency, Rinf, Rh, Qh, Ph, Rl, Ql, Pl, Re, Qe, Pef, Pei)
+        lineCole.set_data(Z.real, Z.imag)
+        lineBodeMagn.set_ydata(abs(Z))
+        lineBodePhase.set_ydata(abs(np.angle(Z, deg=True)))
+        figCole.canvas.draw()
 
     def updateSldOutRh(ZarcFitWindow, value):
         Rh = 10**(value/100.)
@@ -45,16 +76,117 @@ class Main(QMainWindow, Ui_MainWindow):
         lineBodePhase.set_ydata(abs(np.angle(Z, deg=True)))
         figCole.canvas.draw()
 
-
     def updateSldOutFh(ZarcFitWindow, value):
         Fh = 10**(value/100.)
         Qh = 1./(Rh*(2.*np.pi*Fh)**Ph)
-        ZarcFitWindow.SldOutFh.setText("{:.2E}".format(10**(value/100.)))
+        ZarcFitWindow.SldOutFh.setText("{:.2E}".format(Fh))
         Z = CalculateImpedance(frequency, Rinf, Rh, Qh, Ph, Rl, Ql, Pl, Re, Qe, Pef, Pei)
         lineCole.set_data(Z.real, Z.imag)
         lineBodeMagn.set_ydata(abs(Z))
         lineBodePhase.set_ydata(abs(np.angle(Z, deg=True)))     
         figCole.canvas.draw()
+
+    def updateSldOutPh(ZarcFitWindow, value):
+        Ph = value/1000.
+        ZarcFitWindow.SldOutPh.setText("{:.2E}".format(Ph))
+        Z = CalculateImpedance(frequency, Rinf, Rh, Qh, Ph, Rl, Ql, Pl, Re, Qe, Pef, Pei)
+        lineCole.set_data(Z.real, Z.imag)
+        lineBodeMagn.set_ydata(abs(Z))
+        lineBodePhase.set_ydata(abs(np.angle(Z, deg=True)))     
+        figCole.canvas.draw()
+        
+    def updateSldOutRm(ZarcFitWindow, value):
+        Rm = 10**(value/100.)
+        ZarcFitWindow.SldOutRm.setText("{:.2E}".format(Rm))
+        Z = CalculateImpedance(frequency, Rinf, Rh, Qh, Ph, Rl, Ql, Pl, Re, Qe, Pef, Pei)
+        lineCole.set_data(Z.real, Z.imag)
+        lineBodeMagn.set_ydata(abs(Z))
+        lineBodePhase.set_ydata(abs(np.angle(Z, deg=True)))
+        figCole.canvas.draw()
+
+    def updateSldOutFm(ZarcFitWindow, value):
+        Fm = 10**(value/100.)
+        Qm = 1./(Rm*(2.*np.pi*Fm)**Pm)
+        ZarcFitWindow.SldOutFm.setText("{:.2E}".format(Fm))
+        Z = CalculateImpedance(frequency, Rinf, Rh, Qh, Ph, Rl, Ql, Pl, Re, Qe, Pef, Pei)
+        lineCole.set_data(Z.real, Z.imag)
+        lineBodeMagn.set_ydata(abs(Z))
+        lineBodePhase.set_ydata(abs(np.angle(Z, deg=True)))     
+        figCole.canvas.draw()
+
+    def updateSldOutPm(ZarcFitWindow, value):
+        Pm = value/1000.
+        ZarcFitWindow.SldOutPm.setText("{:.2E}".format(Pm))
+        Z = CalculateImpedance(frequency, Rinf, Rh, Qh, Ph, Rl, Ql, Pl, Re, Qe, Pef, Pei)
+        lineCole.set_data(Z.real, Z.imag)
+        lineBodeMagn.set_ydata(abs(Z))
+        lineBodePhase.set_ydata(abs(np.angle(Z, deg=True)))     
+        figCole.canvas.draw()
+        
+    def updateSldOutRl(ZarcFitWindow, value):
+        Rl = 10**(value/100.)
+        ZarcFitWindow.SldOutRl.setText("{:.2E}".format(Rl))
+        Z = CalculateImpedance(frequency, Rinf, Rh, Qh, Ph, Rl, Ql, Pl, Re, Qe, Pef, Pei)
+        lineCole.set_data(Z.real, Z.imag)
+        lineBodeMagn.set_ydata(abs(Z))
+        lineBodePhase.set_ydata(abs(np.angle(Z, deg=True)))
+        figCole.canvas.draw()
+
+    def updateSldOutFl(ZarcFitWindow, value):
+        Fl = 10**(value/100.)
+        Ql = 1./(Rl*(2.*np.pi*Fl)**Pl)
+        ZarcFitWindow.SldOutFl.setText("{:.2E}".format(Fl))
+        Z = CalculateImpedance(frequency, Rinf, Rh, Qh, Ph, Rl, Ql, Pl, Re, Qe, Pef, Pei)
+        lineCole.set_data(Z.real, Z.imag)
+        lineBodeMagn.set_ydata(abs(Z))
+        lineBodePhase.set_ydata(abs(np.angle(Z, deg=True)))     
+        figCole.canvas.draw()
+        
+    def updateSldOutPl(ZarcFitWindow, value):
+        Pl = value/1000.
+        ZarcFitWindow.SldOutPl.setText("{:.2E}".format(Pl))
+        Z = CalculateImpedance(frequency, Rinf, Rh, Qh, Ph, Rl, Ql, Pl, Re, Qe, Pef, Pei)
+        lineCole.set_data(Z.real, Z.imag)
+        lineBodeMagn.set_ydata(abs(Z))
+        lineBodePhase.set_ydata(abs(np.angle(Z, deg=True)))     
+        figCole.canvas.draw()
+
+    def updateSldOutRe(ZarcFitWindow, value):
+        Re = 10**(value/100.)
+        ZarcFitWindow.SldOutRe.setText("{:.2E}".format(Re))
+        Z = CalculateImpedance(frequency, Rinf, Rh, Qh, Ph, Rl, Ql, Pl, Re, Qe, Pef, Pei)
+        lineCole.set_data(Z.real, Z.imag)
+        lineBodeMagn.set_ydata(abs(Z))
+        lineBodePhase.set_ydata(abs(np.angle(Z, deg=True)))
+        figCole.canvas.draw()
+
+    def updateSldOutQe(ZarcFitWindow, value):
+        Qe = 10**(value/100.)
+        ZarcFitWindow.SldOutQe.setText("{:.2E}".format(Qe))
+        Z = CalculateImpedance(frequency, Rinf, Rh, Qh, Ph, Rl, Ql, Pl, Re, Qe, Pef, Pei)
+        lineCole.set_data(Z.real, Z.imag)
+        lineBodeMagn.set_ydata(abs(Z))
+        lineBodePhase.set_ydata(abs(np.angle(Z, deg=True)))     
+        figCole.canvas.draw()
+
+    def updateSldOutPef(ZarcFitWindow, value):
+        Pef = value/1000.
+        ZarcFitWindow.SldOutPef.setText("{:.2E}".format(Pef))
+        Z = CalculateImpedance(frequency, Rinf, Rh, Qh, Ph, Rl, Ql, Pl, Re, Qe, Pef, Pei)
+        lineCole.set_data(Z.real, Z.imag)
+        lineBodeMagn.set_ydata(abs(Z))
+        lineBodePhase.set_ydata(abs(np.angle(Z, deg=True)))     
+        figCole.canvas.draw()
+
+    def updateSldOutPei(ZarcFitWindow, value):
+        Pei = value/1000.
+        ZarcFitWindow.SldOutPei.setText("{:.2E}".format(Pei))
+        Z = CalculateImpedance(frequency, Rinf, Rh, Qh, Ph, Rl, Ql, Pl, Re, Qe, Pef, Pei)
+        lineCole.set_data(Z.real, Z.imag)
+        lineBodeMagn.set_ydata(abs(Z))
+        lineBodePhase.set_ydata(abs(np.angle(Z, deg=True)))     
+        figCole.canvas.draw()
+        
 
     def addmplCole(ZarcFitWindow, fig):
         ZarcFitWindow.canvas = FigureCanvas(fig)
