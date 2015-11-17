@@ -104,6 +104,11 @@ class Zarcfit(object):
 		return out
 
 	def Zseries(self, frequency):
+     		#Compute Qh, Qm, Ql
+		self.Qh = 1./(self.Rh*(2*np.pi*self.Fh)**self.Ph)
+		self.Qm = 1./(self.Rm*(2*np.pi*self.Fm)**self.Pm)
+		self.Ql = 1./(self.Rl*(2*np.pi*self.Fl)**self.Pl)
+
 		self.Zinf = self.Rinf + 1j*2*np.pi*self.Linf*frequency
 		self.Zh = Zarcfun(self.Rh, self.Qh, self.Ph, frequency)
 		self.Zm = Zarcfun(self.Rm, self.Qm, self.Pm, frequency)
@@ -113,6 +118,12 @@ class Zarcfit(object):
 		return self.predSeries
 
 	def Zparallel(self, frequency):
+     		#Compute Qh, Qm, Ql
+		self.Qh = 1./(self.Rh*(2*np.pi*self.Fh)**self.Ph)
+		self.Qm = 1./(self.Rm*(2*np.pi*self.Fm)**self.Pm)
+		self.Ql = 1./(self.Rl*(2*np.pi*self.Fl)**self.Pl)
+		self.SetParametersParallelfromSeries()
+  
 		self.pZh = RplusCPEfun(self.pRh, self.pQh, self.Ph, frequency)
 		self.pZm = RplusCPEfun(self.pRm, self.pQm, self.Pm, frequency)
 		self.pZl = RplusCPEfun(self.pRl, self.pQl, self.Pl, frequency)

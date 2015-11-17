@@ -26,7 +26,10 @@ class Main(QMainWindow, Ui_MainWindow):
         axBodeMagn = figCole.add_subplot( gs[:3,4:])
         axBodePhase = figCole.add_subplot(gs[4:,4:])
 
-        Z = zarc.Zseries(frequency)
+        if ZarcFitWindow.radioButtonSerial.isChecked():
+            Z = ZarcFitWindow.zarc.Zseries(frequency)  
+        else:
+            Z = ZarcFitWindow.zarc.Zparallel(frequency)  
 
         lineColeobs,= axCole.plot(obs.real, obs.imag, 'kx-', lw=3)
         lineCole,= axCole.plot(Z.real, Z.imag, 'ro')    
@@ -44,8 +47,7 @@ class Main(QMainWindow, Ui_MainWindow):
         axBodeMagn.set_xlabel("Frequency [Hz]")
         axBodeMagn.set_ylabel("Total Impedance [Ohm]")
         axBodeMagn.legend(("Obs","Pred"), bbox_to_anchor=(1.25, 1.), fontsize = 10)
-        axBodeMagn.hold (False)
-     
+        axBodeMagn.hold (False)    
                     
         lineBodePhaseobs,= axBodePhase.loglog(frequency, abs(np.angle(obs, deg=True)), 'kx-', lw=3)    
         lineBodePhase,= axBodePhase.loglog(frequency, abs(np.angle(Z, deg=True)), 'ro')        
@@ -110,8 +112,11 @@ class Main(QMainWindow, Ui_MainWindow):
     def updateSldOutLinf(ZarcFitWindow, value):
         Linf = 10**(value/100.)
         ZarcFitWindow.SldOutLinf.setText("{:.2E}".format(Linf))
-        zarc.SetParametersSeries(0., Rinf, Rh, Fh, Ph, Rl, Fl, Pl, Rm, Fm, Pm, Re, Qe, Pef, Pei)
         ZarcFitWindow.zarc.Linf = Linf
+        if ZarcFitWindow.radioButtonSerial.isChecked():
+            Z = ZarcFitWindow.zarc.Zseries(ZarcFitWindow.frequency)  
+        else:
+            Z = ZarcFitWindow.zarc.Zparallel(ZarcFitWindow.frequency)  
         ZarcFitWindow.updateFigs(Z) 
         
     def updateSldOutRinf(ZarcFitWindow, value):
@@ -119,6 +124,10 @@ class Main(QMainWindow, Ui_MainWindow):
         ZarcFitWindow.SldOutRinf.setText("{:.2E}".format(Rinf))
         ZarcFitWindow.zarc.Rinf = Rinf
         Z = ZarcFitWindow.zarc.Zseries(ZarcFitWindow.frequency)        
+        if ZarcFitWindow.radioButtonSerial.isChecked():
+            Z = ZarcFitWindow.zarc.Zseries(ZarcFitWindow.frequency)  
+        else:
+            Z = ZarcFitWindow.zarc.Zparallel(ZarcFitWindow.frequency)  
         ZarcFitWindow.updateFigs(Z) 
 
     def updateSldOutRh(ZarcFitWindow, value):
@@ -126,15 +135,21 @@ class Main(QMainWindow, Ui_MainWindow):
         ZarcFitWindow.SldOutRh.setText("{:.2E}".format(Rh))
         ZarcFitWindow.zarc.Rh = Rh
         Z = ZarcFitWindow.zarc.Zseries(ZarcFitWindow.frequency)
+        if ZarcFitWindow.radioButtonSerial.isChecked():
+            Z = ZarcFitWindow.zarc.Zseries(ZarcFitWindow.frequency)  
+        else:
+            Z = ZarcFitWindow.zarc.Zparallel(ZarcFitWindow.frequency)  
         ZarcFitWindow.updateFigs(Z)                 
-       
 
     def updateSldOutFh(ZarcFitWindow, value):
         Fh = 10**(value/100.)
-        Qh = 1./(Rh*(2.*np.pi*Fh)**Ph)
         ZarcFitWindow.SldOutFh.setText("{:.2E}".format(Fh))
-        ZarcFitWindow.zarc.Qh = Qh
+        ZarcFitWindow.zarc.Fh = Fh
         Z = ZarcFitWindow.zarc.Zseries(ZarcFitWindow.frequency)        
+        if ZarcFitWindow.radioButtonSerial.isChecked():
+            Z = ZarcFitWindow.zarc.Zseries(ZarcFitWindow.frequency)  
+        else:
+            Z = ZarcFitWindow.zarc.Zparallel(ZarcFitWindow.frequency)  
         ZarcFitWindow.updateFigs(Z) 
 
     def updateSldOutPh(ZarcFitWindow, value):
@@ -142,6 +157,10 @@ class Main(QMainWindow, Ui_MainWindow):
         ZarcFitWindow.SldOutPh.setText("{:.2E}".format(Ph))
         ZarcFitWindow.zarc.Ph = Ph
         Z = ZarcFitWindow.zarc.Zseries(ZarcFitWindow.frequency)        
+        if ZarcFitWindow.radioButtonSerial.isChecked():
+            Z = ZarcFitWindow.zarc.Zseries(ZarcFitWindow.frequency)  
+        else:
+            Z = ZarcFitWindow.zarc.Zparallel(ZarcFitWindow.frequency)  
         ZarcFitWindow.updateFigs(Z) 
         
     def updateSldOutRm(ZarcFitWindow, value):
@@ -149,14 +168,21 @@ class Main(QMainWindow, Ui_MainWindow):
         ZarcFitWindow.SldOutRm.setText("{:.2E}".format(Rm))
         ZarcFitWindow.zarc.Rm = Rm
         Z = ZarcFitWindow.zarc.Zseries(ZarcFitWindow.frequency)        
+        if ZarcFitWindow.radioButtonSerial.isChecked():
+            Z = ZarcFitWindow.zarc.Zseries(ZarcFitWindow.frequency)  
+        else:
+            Z = ZarcFitWindow.zarc.Zparallel(ZarcFitWindow.frequency)  
         ZarcFitWindow.updateFigs(Z) 
 
     def updateSldOutFm(ZarcFitWindow, value):
         Fm = 10**(value/100.)
-        Qm = 1./(Rm*(2.*np.pi*Fm)**Pm)
         ZarcFitWindow.SldOutFm.setText("{:.2E}".format(Fm))
         ZarcFitWindow.zarc.Fm = Fm
         Z = ZarcFitWindow.zarc.Zseries(ZarcFitWindow.frequency)        
+        if ZarcFitWindow.radioButtonSerial.isChecked():
+            Z = ZarcFitWindow.zarc.Zseries(ZarcFitWindow.frequency)  
+        else:
+            Z = ZarcFitWindow.zarc.Zparallel(ZarcFitWindow.frequency)  
         ZarcFitWindow.updateFigs(Z) 
 
     def updateSldOutPm(ZarcFitWindow, value):
@@ -164,6 +190,10 @@ class Main(QMainWindow, Ui_MainWindow):
         ZarcFitWindow.SldOutPm.setText("{:.2E}".format(Pm))
         ZarcFitWindow.zarc.Pm = Pm
         Z = ZarcFitWindow.zarc.Zseries(ZarcFitWindow.frequency)        
+        if ZarcFitWindow.radioButtonSerial.isChecked():
+            Z = ZarcFitWindow.zarc.Zseries(ZarcFitWindow.frequency)  
+        else:
+            Z = ZarcFitWindow.zarc.Zparallel(ZarcFitWindow.frequency)  
         ZarcFitWindow.updateFigs(Z) 
         
     def updateSldOutRl(ZarcFitWindow, value):
@@ -171,14 +201,21 @@ class Main(QMainWindow, Ui_MainWindow):
         ZarcFitWindow.SldOutRl.setText("{:.2E}".format(Rl))
         ZarcFitWindow.zarc.Rl = Rl
         Z = ZarcFitWindow.zarc.Zseries(ZarcFitWindow.frequency)        
+        if ZarcFitWindow.radioButtonSerial.isChecked():
+            Z = ZarcFitWindow.zarc.Zseries(ZarcFitWindow.frequency)  
+        else:
+            Z = ZarcFitWindow.zarc.Zparallel(ZarcFitWindow.frequency)  
         ZarcFitWindow.updateFigs(Z) 
 
     def updateSldOutFl(ZarcFitWindow, value):
         Fl = 10**(value/100.)
-        Ql = 1./(Rl*(2.*np.pi*Fl)**Pl)
         ZarcFitWindow.SldOutFl.setText("{:.2E}".format(Fl))
-        ZarcFitWindow.zarc.Ql = Ql
+        ZarcFitWindow.zarc.Fl = Fl
         Z = ZarcFitWindow.zarc.Zseries(ZarcFitWindow.frequency)        
+        if ZarcFitWindow.radioButtonSerial.isChecked():
+            Z = ZarcFitWindow.zarc.Zseries(ZarcFitWindow.frequency)  
+        else:
+            Z = ZarcFitWindow.zarc.Zparallel(ZarcFitWindow.frequency)  
         ZarcFitWindow.updateFigs(Z) 
         
     def updateSldOutPl(ZarcFitWindow, value):
@@ -186,6 +223,10 @@ class Main(QMainWindow, Ui_MainWindow):
         ZarcFitWindow.SldOutPl.setText("{:.2E}".format(Pl))
         ZarcFitWindow.zarc.Pl = Pl
         Z = ZarcFitWindow.zarc.Zseries(ZarcFitWindow.frequency)        
+        if ZarcFitWindow.radioButtonSerial.isChecked():
+            Z = ZarcFitWindow.zarc.Zseries(ZarcFitWindow.frequency)  
+        else:
+            Z = ZarcFitWindow.zarc.Zparallel(ZarcFitWindow.frequency)  
         ZarcFitWindow.updateFigs(Z) 
 
     def updateSldOutRe(ZarcFitWindow, value):
@@ -193,6 +234,10 @@ class Main(QMainWindow, Ui_MainWindow):
         ZarcFitWindow.SldOutRe.setText("{:.2E}".format(Re))
         ZarcFitWindow.zarc.Re = Re
         Z = ZarcFitWindow.zarc.Zseries(ZarcFitWindow.frequency)        
+        if ZarcFitWindow.radioButtonSerial.isChecked():
+            Z = ZarcFitWindow.zarc.Zseries(ZarcFitWindow.frequency)  
+        else:
+            Z = ZarcFitWindow.zarc.Zparallel(ZarcFitWindow.frequency)  
         ZarcFitWindow.updateFigs(Z) 
 
     def updateSldOutQe(ZarcFitWindow, value):
@@ -200,6 +245,10 @@ class Main(QMainWindow, Ui_MainWindow):
         ZarcFitWindow.SldOutQe.setText("{:.2E}".format(Qe))
         ZarcFitWindow.zarc.Qe = Qe
         Z = ZarcFitWindow.zarc.Zseries(ZarcFitWindow.frequency)        
+        if ZarcFitWindow.radioButtonSerial.isChecked():
+            Z = ZarcFitWindow.zarc.Zseries(ZarcFitWindow.frequency)  
+        else:
+            Z = ZarcFitWindow.zarc.Zparallel(ZarcFitWindow.frequency)  
         ZarcFitWindow.updateFigs(Z) 
 
     def updateSldOutPef(ZarcFitWindow, value):
@@ -207,6 +256,10 @@ class Main(QMainWindow, Ui_MainWindow):
         ZarcFitWindow.SldOutPef.setText("{:.2E}".format(Pef))
         ZarcFitWindow.zarc.Pef = Pef
         Z = ZarcFitWindow.zarc.Zseries(ZarcFitWindow.frequency)        
+        if ZarcFitWindow.radioButtonSerial.isChecked():
+            Z = ZarcFitWindow.zarc.Zseries(ZarcFitWindow.frequency)  
+        else:
+            Z = ZarcFitWindow.zarc.Zparallel(ZarcFitWindow.frequency)  
         ZarcFitWindow.updateFigs(Z) 
 
     def updateSldOutPei(ZarcFitWindow, value):
@@ -214,6 +267,10 @@ class Main(QMainWindow, Ui_MainWindow):
         ZarcFitWindow.SldOutPei.setText("{:.2E}".format(Pei))
         ZarcFitWindow.zarc.Pei = Pei
         Z = ZarcFitWindow.zarc.Zseries(ZarcFitWindow.frequency)        
+        if ZarcFitWindow.radioButtonSerial.isChecked():
+            Z = ZarcFitWindow.zarc.Zseries(ZarcFitWindow.frequency)  
+        else:
+            Z = ZarcFitWindow.zarc.Zparallel(ZarcFitWindow.frequency)  
         ZarcFitWindow.updateFigs(Z) 
         
 
@@ -222,6 +279,10 @@ class Main(QMainWindow, Ui_MainWindow):
         ZarcFitWindow.mplCole.addWidget(ZarcFitWindow.canvas)
         ZarcFitWindow.canvas.draw()  
         ZarcFitWindow.toolbar = NavigationToolbar(ZarcFitWindow.canvas, ZarcFitWindow, coordinates=True)
+        if ZarcFitWindow.radioButtonSerial.isChecked():
+            Z = ZarcFitWindow.zarc.Zseries(ZarcFitWindow.frequency)  
+        else:
+            Z = ZarcFitWindow.zarc.Zparallel(ZarcFitWindow.frequency)  
         ZarcFitWindow.addToolBar(ZarcFitWindow.toolbar)     
       
  

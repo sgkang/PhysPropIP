@@ -24,9 +24,96 @@
     <item row="3" column="0">
      <layout class="QHBoxLayout" name="SLDHLyt">
       <item>
-       <layout class="QVBoxLayout" name="SldVLytLinf">
+       <layout class="QVBoxLayout" name="VLytModel">
         <item>
          <widget class="QLabel" name="label_5">
+          <property name="text">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;Model&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QRadioButton" name="radioButtonSerial">
+          <property name="text">
+           <string>Serial</string>
+          </property>
+          <property name="checked">
+           <bool>false</bool>
+          </property>
+          <attribute name="buttonGroup">
+           <string notr="true">buttonGroupModel</string>
+          </attribute>
+         </widget>
+        </item>
+        <item>
+         <widget class="QRadioButton" name="radioButtonParallel">
+          <property name="text">
+           <string>Parallel</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+          <attribute name="buttonGroup">
+           <string notr="true">buttonGroupModel</string>
+          </attribute>
+         </widget>
+        </item>
+        <item>
+         <widget class="Line" name="line">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="label_6">
+          <property name="text">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;Plots&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QRadioButton" name="radioButtonBodePlots">
+          <property name="text">
+           <string>Bode</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+          <attribute name="buttonGroup">
+           <string notr="true">buttonGroupPlots</string>
+          </attribute>
+         </widget>
+        </item>
+        <item>
+         <widget class="QRadioButton" name="radioButtonComplexPlots">
+          <property name="text">
+           <string>Complex</string>
+          </property>
+          <attribute name="buttonGroup">
+           <string notr="true">buttonGroupPlots</string>
+          </attribute>
+         </widget>
+        </item>
+        <item>
+         <spacer name="verticalSpacer">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QVBoxLayout" name="SldVLytLinf">
+        <item>
+         <widget class="QLabel" name="label_36">
           <property name="text">
            <string>1E-2</string>
           </property>
@@ -35,16 +122,10 @@
         <item>
          <widget class="QSlider" name="SliderLinf">
           <property name="sizePolicy">
-           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+           <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
             <horstretch>0</horstretch>
             <verstretch>1</verstretch>
            </sizepolicy>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>100</height>
-           </size>
           </property>
           <property name="minimum">
            <number>-900</number>
@@ -67,14 +148,14 @@
          </widget>
         </item>
         <item>
-         <widget class="QLabel" name="label_6">
+         <widget class="QLabel" name="label_37">
           <property name="text">
            <string>1E-9</string>
           </property>
          </widget>
         </item>
         <item>
-         <layout class="QHBoxLayout" name="SldHLytLinf">
+         <layout class="QHBoxLayout" name="SldHLytinf">
           <item>
            <widget class="QCheckBox" name="ConstrainLinf">
             <property name="text">
@@ -114,7 +195,7 @@
            </font>
           </property>
           <property name="text">
-           <string>1E-4</string>
+           <string>1E+4</string>
           </property>
          </widget>
         </item>
@@ -1580,4 +1661,8 @@
  </widget>
  <resources/>
  <connections/>
+ <buttongroups>
+  <buttongroup name="buttonGroupModel"/>
+  <buttongroup name="buttonGroupPlots"/>
+ </buttongroups>
 </ui>
