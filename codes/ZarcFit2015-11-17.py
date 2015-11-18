@@ -110,7 +110,7 @@ class Main(QMainWindow, Ui_MainWindow):
         super(Main, ZarcFitWindow).__init__()               
         
         ZarcFitWindow.setupUi(ZarcFitWindow) 
-        ZarcFitWindow.actionSelect_Path.triggered.connect(PathPicker.show)
+        ZarcFitWindow.actionSelect_Path.triggered.connect(ZarcFitWindow.PickPath)
         ZarcFitWindow.spinBoxObsFileNumber.valueChanged.connect(ZarcFitWindow.ReadObsFile)
         ZarcFitWindow.SliderLinf.valueChanged.connect(ZarcFitWindow.updateSldOutLinf)
         ZarcFitWindow.SliderRinf.valueChanged.connect(ZarcFitWindow.updateSldOutRinf)
@@ -145,6 +145,13 @@ class Main(QMainWindow, Ui_MainWindow):
 
     def updateRadiOutComplexPlots(ZarcFitWindow, value):
         ZarcFitWindow.updateFigs()
+        
+    def PickPath():
+        print ("PickPath")
+#        app = QtGui.QApplication(sys.argv)
+        gui = PathPicker()
+        gui.show()
+        app.exec_()        
         
     def ReadObsFile(ZarcFitWindow, value):
         print (value)
