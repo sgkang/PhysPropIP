@@ -20,8 +20,8 @@
      <verstretch>0</verstretch>
     </sizepolicy>
    </property>
-   <layout class="QGridLayout" name="gridLayout" rowstretch="1,1,8,4">
-    <item row="3" column="0">
+   <layout class="QGridLayout" name="gridLayout" rowstretch="1,0,1,0,8,0,4">
+    <item row="6" column="0">
      <layout class="QHBoxLayout" name="SLDHLyt">
       <item>
        <layout class="QVBoxLayout" name="VLytModel">
@@ -1531,7 +1531,7 @@
       </item>
      </layout>
     </item>
-    <item row="2" column="0">
+    <item row="4" column="0">
      <layout class="QGridLayout" name="gridLayoutMatPlotLib">
       <item row="0" column="0" rowspan="2">
        <widget class="QWidget" name="widgetCole" native="true">
@@ -1592,7 +1592,7 @@
       </item>
      </layout>
     </item>
-    <item row="1" column="0">
+    <item row="2" column="0">
      <layout class="QGridLayout" name="gridLayout_2nd">
       <item row="1" column="2">
        <widget class="QSpinBox" name="spinBox_2">
@@ -1676,6 +1676,27 @@
       </item>
      </layout>
     </item>
+    <item row="3" column="0">
+     <widget class="Line" name="line_4">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="0">
+     <widget class="Line" name="line_3">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="0">
+     <widget class="Line" name="line_5">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
+    </item>
    </layout>
   </widget>
   <widget class="QMenuBar" name="menubar">
@@ -1687,11 +1708,183 @@
      <height>18</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menu_File">
+    <property name="title">
+     <string>&amp;File</string>
+    </property>
+    <addaction name="actionSelect_Path"/>
+    <addaction name="actionSelect_Parameter_File"/>
+    <addaction name="actionObs_File_Type"/>
+    <addaction name="actionObs_File"/>
+    <addaction name="actionNext_Obs_File"/>
+    <addaction name="actionPrev_Obs_File"/>
+   </widget>
+   <widget class="QMenu" name="menuModel">
+    <property name="title">
+     <string>&amp;Model</string>
+    </property>
+    <addaction name="actionF1_Fit_Spectrum_Cartesian_Cole"/>
+    <addaction name="actionF2_Fit_Spectrum_Polar_Bode"/>
+    <addaction name="actionF3_All_Freq_s"/>
+    <addaction name="actionF7_Read_Parameters_2"/>
+    <addaction name="actionF8_Default_Start_Model"/>
+   </widget>
+   <widget class="QMenu" name="menuOutput">
+    <property name="title">
+     <string>&amp;Output</string>
+    </property>
+    <addaction name="actionWrite_Header"/>
+    <addaction name="actionF4_Write_Fit"/>
+   </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>Help</string>
+    </property>
+   </widget>
+   <addaction name="menu_File"/>
+   <addaction name="menuModel"/>
+   <addaction name="menuOutput"/>
+   <addaction name="menuHelp"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QToolBar" name="toolBar">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionSelect_Path"/>
+   <addaction name="actionSelect_Parameter_File"/>
+  </widget>
+  <action name="actionSelect_Path">
+   <property name="text">
+    <string>Path</string>
+   </property>
+  </action>
+  <action name="actionSelect_Parameter_File">
+   <property name="text">
+    <string>Parameter File</string>
+   </property>
+  </action>
+  <action name="actionObs_File_Type">
+   <property name="text">
+    <string>Obs File Type</string>
+   </property>
+  </action>
+  <action name="actionObs_File">
+   <property name="text">
+    <string>Obs File</string>
+   </property>
+  </action>
+  <action name="actionNext_Obs_File">
+   <property name="text">
+    <string>F5 - Next Obs File</string>
+   </property>
+   <property name="shortcut">
+    <string>F5</string>
+   </property>
+  </action>
+  <action name="actionPrev_Obs_File">
+   <property name="text">
+    <string>F6 - Prev Obs File</string>
+   </property>
+   <property name="shortcut">
+    <string>F6</string>
+   </property>
+  </action>
+  <action name="actionF1_Fit_Spectrum_Cartesian_Cole">
+   <property name="text">
+    <string>F1 - Fit Spectrum Cartesian/Cole</string>
+   </property>
+   <property name="shortcut">
+    <string>F1</string>
+   </property>
+  </action>
+  <action name="actionF2_Fit_Spectrum_Polar_Bode">
+   <property name="text">
+    <string>F2 - Fit Spectrum Polar/Bode</string>
+   </property>
+   <property name="shortcut">
+    <string>F2</string>
+   </property>
+  </action>
+  <action name="actionWrite_Header">
+   <property name="text">
+    <string>Write Header</string>
+   </property>
+  </action>
+  <action name="actionF3_All_Freq_s">
+   <property name="text">
+    <string>F3 - All Freq.s</string>
+   </property>
+   <property name="shortcut">
+    <string>F3</string>
+   </property>
+  </action>
+  <action name="actionF7_Read_Parameters_2">
+   <property name="text">
+    <string>F7 - Read Parameters</string>
+   </property>
+   <property name="shortcut">
+    <string>F7</string>
+   </property>
+  </action>
+  <action name="actionF4_Write_Fit">
+   <property name="text">
+    <string>F4 - Write Fit</string>
+   </property>
+   <property name="shortcut">
+    <string>F4</string>
+   </property>
+  </action>
+  <action name="actionF8_Default_Start_Model">
+   <property name="text">
+    <string>F8-Default Start Model</string>
+   </property>
+   <property name="shortcut">
+    <string>F8</string>
+   </property>
+  </action>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>horizontalSlider</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>spinBox_3</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>416</x>
+     <y>89</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>451</x>
+     <y>87</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spinBox_3</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>horizontalSlider</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>471</x>
+     <y>79</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>289</x>
+     <y>87</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
  <buttongroups>
   <buttongroup name="buttonGroupModel"/>
   <buttongroup name="buttonGroupPlots"/>

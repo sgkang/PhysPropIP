@@ -90,7 +90,7 @@ class Zarcfit(object):
 
 	def SetParametersParallelfromSeries(self):
 		self.R0   = self.Rinf + self.Rh + self.Rm + self.Rl
-		self.pRh  = self.Rinf / (self.Rinf + self.Rh) / self.Rh   
+		self.pRh  = self.Rinf * (self.Rinf + self.Rh) / self.Rh   
 		self.pQh  = self.Qh*(self.Rh/(self.Rinf+self.Rh))**2
 		self.pRm  = (self.Rinf + self.Rh) * (self.Rinf + self.Rh + self.Rm) / self.Rm
 		self.pQm  = self.Qm*(self.Rm/(self.Rinf+self.Rh+self.Rm))**2
