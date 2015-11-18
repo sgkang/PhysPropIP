@@ -146,8 +146,8 @@ class Main(QMainWindow, Ui_MainWindow):
     def updateRadiOutComplexPlots(ZarcFitWindow, value):
         ZarcFitWindow.updateFigs()
         
-    def PickPath():
-        print ("PickPath")
+    def PickPath(ZarcFitWindow, value):
+        print ("PickPath", value)
 #        app = QtGui.QApplication(sys.argv)
         gui = PathPicker()
         gui.show()
@@ -287,6 +287,7 @@ class Main(QMainWindow, Ui_MainWindow):
         ZarcFitWindow.addToolBar(ZarcFitWindow.toolbar)     
  
 if __name__ == '__main__':
+
     Rinf = 1.E4
     Rh = 1.E5
     Fh = 1e6
