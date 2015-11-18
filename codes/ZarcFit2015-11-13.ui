@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>869</width>
+    <width>952</width>
     <height>823</height>
    </rect>
   </property>
@@ -1579,14 +1579,14 @@
       <item row="2" column="1">
        <layout class="QHBoxLayout" name="horizontalLayout">
         <item>
-         <widget class="QSlider" name="horizontalSlider">
+         <widget class="QSlider" name="horizontalSliderObsFileNumber">
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QSpinBox" name="spinBox_3"/>
+         <widget class="QSpinBox" name="spinBoxObsFileNumber"/>
         </item>
        </layout>
       </item>
@@ -1704,8 +1704,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>869</width>
-     <height>18</height>
+     <width>952</width>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -1853,9 +1853,9 @@
  <resources/>
  <connections>
   <connection>
-   <sender>horizontalSlider</sender>
+   <sender>horizontalSliderObsFileNumber</sender>
    <signal>valueChanged(int)</signal>
-   <receiver>spinBox_3</receiver>
+   <receiver>spinBoxObsFileNumber</receiver>
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
@@ -1863,20 +1863,20 @@
      <y>89</y>
     </hint>
     <hint type="destinationlabel">
-     <x>451</x>
-     <y>87</y>
+     <x>525</x>
+     <y>100</y>
     </hint>
    </hints>
   </connection>
   <connection>
-   <sender>spinBox_3</sender>
+   <sender>spinBoxObsFileNumber</sender>
    <signal>valueChanged(int)</signal>
-   <receiver>horizontalSlider</receiver>
+   <receiver>horizontalSliderObsFileNumber</receiver>
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>471</x>
-     <y>79</y>
+     <x>525</x>
+     <y>100</y>
     </hint>
     <hint type="destinationlabel">
      <x>289</x>
@@ -1886,7 +1886,7 @@
   </connection>
  </connections>
  <buttongroups>
-  <buttongroup name="buttonGroupModel"/>
   <buttongroup name="buttonGroupPlots"/>
+  <buttongroup name="buttonGroupModel"/>
  </buttongroups>
 </ui>
