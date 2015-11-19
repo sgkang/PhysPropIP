@@ -13,7 +13,7 @@ from Zarcfit import *
 Ui_MainWindow, QMainWindow = loadUiType('ZarcFit2015-11-13.ui')  
 
 class PathPicker(QtGui.QWidget):
-    def __init__(self, parent=None):
+    def __init__(self, ZarcFitWindow, parent=None):
         # create GUI
         super(PathPicker, self).__init__()
         self.setWindowTitle('path picker')
@@ -30,7 +30,8 @@ class PathPicker(QtGui.QWidget):
         self.vbox.addWidget(btn)        
         # Connect the clicked signal to the get_fname handler
         self.connect(btn, QtCore.SIGNAL('clicked()'), self.get_fname)
-
+        self.ZarcFitWindow = ZarcFitWindow
+        
     def get_fname(self):
         """
         Handler called when 'choose path' is clicked
@@ -41,7 +42,7 @@ class PathPicker(QtGui.QWidget):
         fname = QtGui.QFileDialog.getExistingDirectory(self, "Select Path")
         if fname:
             self.lbl.setText(fname)
-            ZarcFitWindow.lineEditPath.setText(fname)
+            self.ZarcFitWindow.lineEditPath.setText(fname)
         else:
             self.lbl.setText('No path selected')
 
@@ -149,7 +150,7 @@ class Main(QMainWindow, Ui_MainWindow):
         
     def PickPath(ZarcFitWindow):
         ZarcFitWindow.PathPickerWindow.show()
-        ZarcFitWindow.PathPickerWindow.exec_()        
+        # ZarcFitWindow.PathPickerWindow.exec_()        
         
     def ReadObsFile(ZarcFitWindow, value):
         print (value)
