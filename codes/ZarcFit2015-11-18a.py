@@ -1,5 +1,5 @@
 import numpy as np
-import sys
+import sys, glob, os
 from PyQt4 import QtGui, QtCore
 from PyQt4.uic import loadUiType
 from matplotlib.figure import Figure
@@ -13,6 +13,9 @@ from Zarcfit import *
 Ui_MainWindow, QMainWindow = loadUiType('ZarcFit2015-11-13.ui')  
 
 class PathPicker(QtGui.QWidget):
+
+    fnamestr = None
+
     def __init__(self, ZarcFitWindow, parent=None):
         # create GUI
         super(PathPicker, self).__init__()
@@ -31,7 +34,7 @@ class PathPicker(QtGui.QWidget):
         # Connect the clicked signal to the get_fname handler
         self.connect(btn, QtCore.SIGNAL('clicked()'), self.get_fname)
         self.ZarcFitWindow = ZarcFitWindow
-        
+
     def get_fname(self):
         """
         Handler called when 'choose path' is clicked
@@ -40,9 +43,12 @@ class PathPicker(QtGui.QWidget):
         # and if the user selects a path, it's path is returned, and if not
         # (ie, the user cancels the operation) None is returned
         fname = QtGui.QFileDialog.getExistingDirectory(self, "Select Path")
+        self.fnamestr = str(fname)
+
         if fname:
             self.lbl.setText(fname)
             self.ZarcFitWindow.lineEditPath.setText(fname)
+            self.ZarcFitWindow.getOBSFNAME()
         else:
             self.lbl.setText('No path selected')
 
@@ -52,6 +58,7 @@ class Main(QMainWindow, Ui_MainWindow):
     fwdtype = "series"
     axComplexReal = None
     axComplexImag = None
+    OBSFNAME = None
 
     def __init__(ZarcFitWindow, zarc, obs, frequency):
         ZarcFitWindow.zarc = zarc
@@ -147,13 +154,24 @@ class Main(QMainWindow, Ui_MainWindow):
 
     def updateRadiOutComplexPlots(ZarcFitWindow, value):
         ZarcFitWindow.updateFigs()
-        
+    
     def PickPath(ZarcFitWindow):
-        ZarcFitWindow.PathPickerWindow.show()
+        ZarcFitWindow.PathPickerWindow.show()        
         # ZarcFitWindow.PathPickerWindow.exec_()        
-        
+    
+    def getOBSFNAME(ZarcFitWindow):
+
+        ZarcFitWindow.OBSFNAME = []
+        if ZarcFitWindow.PathPickerWindow.fnamestr:                
+            os.chdir(ZarcFitWindow.PathPickerWindow.fnamestr)                
+            # Read *.z file in the path
+            for file in glob.glob("*.z"):
+                ZarcFitWindow.OBSFNAME.append(file) 
+                print (file)      
+
     def ReadObsFile(ZarcFitWindow, value):
-        print (value)
+
+        print (value, ZarcFitWindow.OBSFNAME[value])
 
                         
     def updateFigs(ZarcFitWindow):
