@@ -168,12 +168,14 @@ class Main(QMainWindow, Ui_MainWindow):
             # Read *.z file in the path
             for file in glob.glob("*.z"):
                 ZarcFitWindow.OBSFNAME.append(file) 
-                print (file)      
+                print (file)
+            ZarcFitWindow.OBSFNAMEdirsize = len(ZarcFitWindow.OBSFNAME)
+            print(ZarcFitWindow.OBSFNAMEdirsize)
+            ZarcFitWindow.horizontalSliderObsFileNumber.setMaximum(ZarcFitWindow.OBSFNAMEdirsize-1)
 
     def ReadObsFile(ZarcFitWindow, value):
-
-        print (value, ZarcFitWindow.OBSFNAME[value])
-
+        ZarcFitWindow.lineEditOBSFNAME.setText(ZarcFitWindow.OBSFNAME[value])
+        print (value, ZarcFitWindow.OBSFNAME[value], ZarcFitWindow.lineEditPRMFNAME.text())
                         
     def updateFigs(ZarcFitWindow):
 
