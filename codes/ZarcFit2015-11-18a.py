@@ -33,6 +33,7 @@ class PathPicker(QtGui.QWidget):
         self.vbox.addWidget(btn)        
         # Connect the clicked signal to the get_fname handler
         self.connect(btn, QtCore.SIGNAL('clicked()'), self.get_fname)
+        # Connect to ZarcFitWindow
         self.ZarcFitWindow = ZarcFitWindow
 
     def get_fname(self):
