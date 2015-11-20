@@ -1627,7 +1627,7 @@
       <item row="0" column="1" alignment="Qt::AlignRight">
        <widget class="QLabel" name="label_2">
         <property name="text">
-         <string>High Freq Limit</string>
+         <string>High Freq Index</string>
         </property>
        </widget>
       </item>
@@ -1669,7 +1669,7 @@
       <item row="1" column="1">
        <widget class="QLabel" name="label_3">
         <property name="text">
-         <string>Low Freq Limit</string>
+         <string>Low Freq Index</string>
         </property>
         <property name="alignment">
          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -1721,7 +1721,7 @@
      <x>0</x>
      <y>0</y>
      <width>952</width>
-     <height>21</height>
+     <height>18</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
