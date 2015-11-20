@@ -136,6 +136,9 @@ class Main(QMainWindow, Ui_MainWindow):
         ZarcFitWindow.SliderQe.valueChanged.connect(ZarcFitWindow.updateSldOutQe)
         ZarcFitWindow.SliderPef.valueChanged.connect(ZarcFitWindow.updateSldOutPef)
         ZarcFitWindow.SliderPei.valueChanged.connect(ZarcFitWindow.updateSldOutPei)
+
+        ZarcFitWindow.spinBoxHighFreq.valueChanged.connect(ZarcFitWindow.updateHighFreq)
+        ZarcFitWindow.spinBoxLowFreq.valueChanged.connect(ZarcFitWindow.updateLowFreq)
         
         #Connect QRadiobutton
         ZarcFitWindow.radioButtonSerial.clicked.connect(ZarcFitWindow.updateRadiOutSerial)
@@ -161,6 +164,19 @@ class Main(QMainWindow, Ui_MainWindow):
 
     def updateRadiOutComplexPlots(ZarcFitWindow, value):
         ZarcFitWindow.updateFigs()
+        
+    def updateHighFreq(ZarcFitWindow, value):
+        ZarcFitWindow.spinBoxHighFreq.setValue(value)
+        ZarcFitWindow.labelHighFreq.setText("{:.3E}".format(frequency[value]))
+        #choose frequencies and set limits for plots
+        ZarcFitWindow.updateFigs()
+
+    def updateLowFreq(ZarcFitWindow, value):
+        ZarcFitWindow.spinBoxLowFreq.setValue(value)
+        ZarcFitWindow.labelLowFreq.setText("{:.3E}".format(frequency[value]))
+        #choose frequencies and set limits for plots
+        ZarcFitWindow.updateFigs()
+        
     
     def PickPath(ZarcFitWindow):
         ZarcFitWindow.PathPickerWindow.show()        
