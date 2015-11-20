@@ -148,9 +148,9 @@ class Main(QMainWindow, Ui_MainWindow):
         ZarcFitWindow.PathPickerWindow = PathPicker(ZarcFitWindow)
         
         ZarcFitWindow.spinBoxHighFreq.setValue(0)
-        ZarcFitWindow.labelHighFreq.setText("{:.3E}".format(frequencyAll[0]))
+        ZarcFitWindow.labelHighFreq.setText("{:,}".format(frequencyAll[0])+" Hz")
         ZarcFitWindow.spinBoxLowFreq.setValue(frequencyN-1)
-        ZarcFitWindow.labelLowFreq.setText("{:.3E}".format(frequencyAll[frequencyN-1]))
+        ZarcFitWindow.labelLowFreq.setText("{:,}".format(frequencyAll[frequencyN-1])+" Hz")
 
 
     def updateRadiOutSerial(ZarcFitWindow, value):
@@ -167,15 +167,15 @@ class Main(QMainWindow, Ui_MainWindow):
         
     def updateHighFreq(ZarcFitWindow, value):
         ZarcFitWindow.spinBoxHighFreq.setValue(value)
-        ZarcFitWindow.labelHighFreq.setText("{:.3E}".format(frequency[value]))
+        ZarcFitWindow.labelHighFreq.setText("{:,}".format(frequency[value])+" Hz")
         #choose frequencies and set limits for plots
-        ZarcFitWindow.updateFigs()
+        #ZarcFitWindow.updateFigs()
 
     def updateLowFreq(ZarcFitWindow, value):
         ZarcFitWindow.spinBoxLowFreq.setValue(value)
-        ZarcFitWindow.labelLowFreq.setText("{:.3E}".format(frequency[value]))
+        ZarcFitWindow.labelLowFreq.setText("{:,}".format(frequency[value])+" Hz")
         #choose frequencies and set limits for plots
-        ZarcFitWindow.updateFigs()
+        #ZarcFitWindow.updateFigs()
         
     
     def PickPath(ZarcFitWindow):
