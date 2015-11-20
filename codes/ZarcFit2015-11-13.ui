@@ -1632,14 +1632,14 @@
        </widget>
       </item>
       <item row="0" column="4">
-       <widget class="QPushButton" name="pushButton">
+       <widget class="QPushButton" name="pushButtonFitCole">
         <property name="text">
          <string>F1 - Fit Spectrum Cartesian/Cole</string>
         </property>
        </widget>
       </item>
       <item row="1" column="4">
-       <widget class="QPushButton" name="pushButton_2">
+       <widget class="QPushButton" name="pushButtonFitBode">
         <property name="text">
          <string>F2 - Fit Spectrum Polar/Bode</string>
         </property>
@@ -1653,14 +1653,14 @@
        </widget>
       </item>
       <item row="1" column="5">
-       <widget class="QPushButton" name="pushButton_3">
+       <widget class="QPushButton" name="pushButtonWriteParam">
         <property name="text">
          <string>F4 - Write Fit Params</string>
         </property>
        </widget>
       </item>
       <item row="0" column="5">
-       <widget class="QPushButton" name="pushButton_4">
+       <widget class="QPushButton" name="pushButtonWriteHeader">
         <property name="text">
          <string>Write Header</string>
         </property>
@@ -1731,7 +1731,6 @@
     <addaction name="actionSelect_Path"/>
     <addaction name="actionSelect_Parameter_File"/>
     <addaction name="actionObs_File_Type"/>
-    <addaction name="actionObs_File"/>
     <addaction name="actionNext_Obs_File"/>
     <addaction name="actionPrev_Obs_File"/>
    </widget>
@@ -1742,7 +1741,7 @@
     <addaction name="actionF1_Fit_Spectrum_Cartesian_Cole"/>
     <addaction name="actionF2_Fit_Spectrum_Polar_Bode"/>
     <addaction name="actionF3_All_Freq_s"/>
-    <addaction name="actionF7_Read_Parameters_2"/>
+    <addaction name="actionF7_Read_Parameters"/>
     <addaction name="actionF8_Default_Start_Model"/>
    </widget>
    <widget class="QMenu" name="menuOutput">
@@ -1756,6 +1755,8 @@
     <property name="title">
      <string>Help</string>
     </property>
+    <addaction name="actionZarcFit_Help"/>
+    <addaction name="actionAbout_ZarcFit"/>
    </widget>
    <addaction name="menu_File"/>
    <addaction name="menuModel"/>
@@ -1789,11 +1790,6 @@
   <action name="actionObs_File_Type">
    <property name="text">
     <string>Obs File Type</string>
-   </property>
-  </action>
-  <action name="actionObs_File">
-   <property name="text">
-    <string>Obs File</string>
    </property>
   </action>
   <action name="actionNext_Obs_File">
@@ -1841,7 +1837,7 @@
     <string>F3</string>
    </property>
   </action>
-  <action name="actionF7_Read_Parameters_2">
+  <action name="actionF7_Read_Parameters">
    <property name="text">
     <string>F7 - Read Parameters</string>
    </property>
@@ -1863,6 +1859,16 @@
    </property>
    <property name="shortcut">
     <string>F8</string>
+   </property>
+  </action>
+  <action name="actionZarcFit_Help">
+   <property name="text">
+    <string>ZarcFit Help</string>
+   </property>
+  </action>
+  <action name="actionAbout_ZarcFit">
+   <property name="text">
+    <string>About ZarcFit</string>
    </property>
   </action>
  </widget>

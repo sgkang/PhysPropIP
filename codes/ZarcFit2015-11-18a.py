@@ -116,11 +116,30 @@ class Main(QMainWindow, Ui_MainWindow):
         ZarcFitWindow.lineBodeMagnobs = lineBodeMagnobs
         ZarcFitWindow.lineBodePhaseobs = lineBodePhaseobs
 
-        super(Main, ZarcFitWindow).__init__()
-        
+        super(Main, ZarcFitWindow).__init__()    
         ZarcFitWindow.setupUi(ZarcFitWindow) 
+        
         ZarcFitWindow.actionSelect_Path.triggered.connect(ZarcFitWindow.PickPath)
+        ZarcFitWindow.actionSelect_Parameter_File.triggered.connect(ZarcFitWindow.SelectParameterFile)
+        ZarcFitWindow.actionObs_File_Type.triggered.connect(ZarcFitWindow.SelectObsFileType)
+        ZarcFitWindow.actionNext_Obs_File.triggered.connect(ZarcFitWindow.NextObsFile)
+        ZarcFitWindow.actionPrev_Obs_File.triggered.connect(ZarcFitWindow.PrevObsFile)
+        ZarcFitWindow.actionF1_Fit_Spectrum_Cartesian_Cole.triggered.connect(ZarcFitWindow.FitCole)
+        ZarcFitWindow.actionF2_Fit_Spectrum_Polar_Bode.triggered.connect(ZarcFitWindow.FitBode)
+        ZarcFitWindow.actionF3_All_Freq_s.triggered.connect(ZarcFitWindow.AllFreqs)
+        ZarcFitWindow.actionF7_Read_Parameters.triggered.connect(ZarcFitWindow.ReadParameters)
+        ZarcFitWindow.actionF8_Default_Start_Model.triggered.connect(ZarcFitWindow.DefaultStartModel)
+        ZarcFitWindow.actionWrite_Header.triggered.connect(ZarcFitWindow.WriteHeader)
+        ZarcFitWindow.actionF4_Write_Fit.triggered.connect(ZarcFitWindow.WriteParam)
+        ZarcFitWindow.actionZarcFit_Help.triggered.connect(ZarcFitWindow.ZarcFitHelp)
+        ZarcFitWindow.actionAbout_ZarcFit.triggered.connect(ZarcFitWindow.AboutZarcFit)
+        
         ZarcFitWindow.spinBoxObsFileNumber.valueChanged.connect(ZarcFitWindow.ReadObsFile)
+        ZarcFitWindow.pushButtonFitCole.clicked.connect(ZarcFitWindow.FitCole)
+        ZarcFitWindow.pushButtonFitBode.clicked.connect(ZarcFitWindow.FitBode)
+        ZarcFitWindow.pushButtonWriteHeader.clicked.connect(ZarcFitWindow.WriteHeader)
+        ZarcFitWindow.pushButtonWriteParam.clicked.connect(ZarcFitWindow.WriteParam)
+        
         ZarcFitWindow.SliderLinf.valueChanged.connect(ZarcFitWindow.updateSldOutLinf)
         ZarcFitWindow.SliderRinf.valueChanged.connect(ZarcFitWindow.updateSldOutRinf)
         ZarcFitWindow.SliderRh.valueChanged.connect(ZarcFitWindow.updateSldOutRh)
@@ -153,54 +172,17 @@ class Main(QMainWindow, Ui_MainWindow):
         ZarcFitWindow.labelLowFreq.setText("{:,}".format(frequencyAll[frequencyN-1])+" Hz")
 
 
-    def updateRadiOutSerial(ZarcFitWindow, value):
-        ZarcFitWindow.updateFigs()
-
-    def updateRadiOutParallel(ZarcFitWindow, value):
-        ZarcFitWindow.updateFigs()        
     
-    def updateRadiOutBodePlots(ZarcFitWindow, value):
-        ZarcFitWindow.updateFigs()
-
-    def updateRadiOutComplexPlots(ZarcFitWindow, value):
-        ZarcFitWindow.updateFigs()
-        
-    def updateHighFreq(ZarcFitWindow, value):
-        ZarcFitWindow.spinBoxHighFreq.setValue(value)
-        ZarcFitWindow.labelHighFreq.setText("{:,}".format(frequency[value])+" Hz")
-        #choose frequencies and set limits for plots
-        #ZarcFitWindow.updateFigs()
-
-    def updateLowFreq(ZarcFitWindow, value):
-        ZarcFitWindow.spinBoxLowFreq.setValue(value)
-        ZarcFitWindow.labelLowFreq.setText("{:,}".format(frequency[value])+" Hz")
-        #choose frequencies and set limits for plots
-        #ZarcFitWindow.updateFigs()
-        
-    
-    def PickPath(ZarcFitWindow):
-        ZarcFitWindow.PathPickerWindow.show()        
-        # ZarcFitWindow.PathPickerWindow.exec_()        
-    
-    def getOBSFNAME(ZarcFitWindow):
-
-        ZarcFitWindow.OBSFNAME = []
-        if ZarcFitWindow.PathPickerWindow.fnamestr:                
-            os.chdir(ZarcFitWindow.PathPickerWindow.fnamestr)                
-            # Read *.z file in the path
-            for file in glob.glob("*.z"):
-                ZarcFitWindow.OBSFNAME.append(file) 
-                print (file)
-            ZarcFitWindow.OBSFNAMEdirsize = len(ZarcFitWindow.OBSFNAME)
-            print(ZarcFitWindow.OBSFNAMEdirsize)
-            ZarcFitWindow.horizontalSliderObsFileNumber.setMaximum(ZarcFitWindow.OBSFNAMEdirsize-1)
-
-    def ReadObsFile(ZarcFitWindow, value):
-        ZarcFitWindow.lineEditOBSFNAME.setText(ZarcFitWindow.OBSFNAME[value])
-        print (value, ZarcFitWindow.OBSFNAME[value], ZarcFitWindow.lineEditPRMFNAME.text())
                         
+    #### Matplotlib window ####
+    def addmplCole(ZarcFitWindow):
+        ZarcFitWindow.canvas = FigureCanvas(ZarcFitWindow.figCole)
+        ZarcFitWindow.mplCole.addWidget(ZarcFitWindow.canvas)
+        ZarcFitWindow.canvas.draw()  
+        ZarcFitWindow.toolbar = NavigationToolbar(ZarcFitWindow.canvas, ZarcFitWindow, coordinates=True)
+        ZarcFitWindow.addToolBar(ZarcFitWindow.toolbar)   
+        
     def updateFigs(ZarcFitWindow):
-
         if ZarcFitWindow.radioButtonSerial.isChecked():
             Z = ZarcFitWindow.zarc.Zseries(ZarcFitWindow.frequency)  
         elif ZarcFitWindow.radioButtonParallel.isChecked():
@@ -213,7 +195,6 @@ class Main(QMainWindow, Ui_MainWindow):
         ZarcFitWindow.axCole.draw_artist(ZarcFitWindow.axCole.patch)        
         ZarcFitWindow.axCole.draw_artist(ZarcFitWindow.lineCole)
         ZarcFitWindow.axCole.draw_artist(ZarcFitWindow.lineColeobs)
-
 
         ZarcFitWindow.lineBodeMagn.set_ydata(abs(Z))
         ZarcFitWindow.lineBodeMagnobs.set_ydata(abs(ZarcFitWindow.obs))
@@ -228,8 +209,96 @@ class Main(QMainWindow, Ui_MainWindow):
         ZarcFitWindow.axBodePhase.draw_artist(ZarcFitWindow.lineBodePhaseobs)  
 
         ZarcFitWindow.figCole.canvas.update()
+        
+    def updateRadiOutSerial(ZarcFitWindow, value):
+        ZarcFitWindow.updateFigs()
 
+    def updateRadiOutParallel(ZarcFitWindow, value):
+        ZarcFitWindow.updateFigs()        
+    
+    def updateRadiOutBodePlots(ZarcFitWindow, value):
+        ZarcFitWindow.updateFigs()
 
+    def updateRadiOutComplexPlots(ZarcFitWindow, value):
+        ZarcFitWindow.updateFigs()
+        
+
+    #### Menus and Buttons ####
+    # # # Files # # #
+    def PickPath(ZarcFitWindow):
+        ZarcFitWindow.PathPickerWindow.show()        
+        # ZarcFitWindow.PathPickerWindow.exec_()        
+    
+    def getOBSFNAME(ZarcFitWindow):
+        ZarcFitWindow.OBSFNAME = []
+        if ZarcFitWindow.PathPickerWindow.fnamestr:                
+            os.chdir(ZarcFitWindow.PathPickerWindow.fnamestr)                
+            # Read *.z file in the path
+            for file in glob.glob("*.z"):
+                ZarcFitWindow.OBSFNAME.append(file) 
+                print (file)
+            ZarcFitWindow.OBSFNAMEdirsize = len(ZarcFitWindow.OBSFNAME)
+            print(ZarcFitWindow.OBSFNAMEdirsize)
+            ZarcFitWindow.horizontalSliderObsFileNumber.setMaximum(ZarcFitWindow.OBSFNAMEdirsize-1)
+
+    def ReadObsFile(ZarcFitWindow, value):
+        ZarcFitWindow.lineEditOBSFNAME.setText(ZarcFitWindow.OBSFNAME[value])
+        print (value, ZarcFitWindow.OBSFNAME[value], ZarcFitWindow.lineEditPRMFNAME.text())
+
+    def SelectParameterFile(ZarcFitWindow):
+        print ("SelectParameterFile")
+
+    def SelectObsFileType(ZarcFitWindow):
+        print ("SelectObsFileType")
+
+    def NextObsFile(ZarcFitWindow):
+        print ("NextObsFile")
+
+    def PrevObsFile(ZarcFitWindow):
+        print ("PrevObsFile")
+
+    # # # Fits # # #
+    def updateHighFreq(ZarcFitWindow, value):
+        ZarcFitWindow.spinBoxHighFreq.setValue(value)
+        ZarcFitWindow.labelHighFreq.setText("{:,}".format(frequency[value])+" Hz")
+        #choose frequencies and set limits for plots
+        #ZarcFitWindow.updateFigs()
+
+    def updateLowFreq(ZarcFitWindow, value):
+        ZarcFitWindow.spinBoxLowFreq.setValue(value)
+        ZarcFitWindow.labelLowFreq.setText("{:,}".format(frequency[value])+" Hz")
+        #choose frequencies and set limits for plots
+        #ZarcFitWindow.updateFigs()
+       
+    def AllFreqs(ZarcFitWindow):
+        print ("AllFreqs")
+        
+    def ReadParameters(ZarcFitWindow):
+        print ("ReadParameters")
+        
+    def DefaultStartModel(ZarcFitWindow):
+        print ("DefaultStartModel")
+        
+    def FitCole(ZarcFitWindow):
+        print ("Fit Cole")
+        
+    def FitBode(ZarcFitWindow):
+        print ("Fit Bode")
+        
+    def WriteHeader(ZarcFitWindow):
+        print ("Write Header")
+        
+    def WriteParam(ZarcFitWindow):
+        print ("Write Param")
+
+    # # # Help # # #
+    def ZarcFitHelp(ZarcFitWindow):
+        print ("ZarcFitHelp")
+        
+    def AboutZarcFit(ZarcFitWindow):
+        print ("AboutZarcFit")
+        
+    #### Update Sliders ####
     def updateSldOutLinf(ZarcFitWindow, value):
         Linf = 10**(value/1000.)
         ZarcFitWindow.SldOutLinf.setText("{:.2E}".format(Linf))
@@ -321,13 +390,8 @@ class Main(QMainWindow, Ui_MainWindow):
         ZarcFitWindow.updateFigs() 
         
 
-    def addmplCole(ZarcFitWindow):
-        ZarcFitWindow.canvas = FigureCanvas(ZarcFitWindow.figCole)
-        ZarcFitWindow.mplCole.addWidget(ZarcFitWindow.canvas)
-        ZarcFitWindow.canvas.draw()  
-        ZarcFitWindow.toolbar = NavigationToolbar(ZarcFitWindow.canvas, ZarcFitWindow, coordinates=True)
-        ZarcFitWindow.addToolBar(ZarcFitWindow.toolbar)     
- 
+############################################################################### 
+############################################################################### 
 if __name__ == '__main__':
     Rinf = 1.E4
     Rh = 1.E5
