@@ -143,6 +143,12 @@ class Main(QMainWindow, Ui_MainWindow):
         # ZarcFitWindow.radioButtonBodePlots.clicked.connect(ZarcFitWindow.updateRadiOutBodePlots)
         # ZarcFitWindow.radioButtonComplexPlots.clicked.connect(ZarcFitWindow.updateRadiOutComplexPlots)
         ZarcFitWindow.PathPickerWindow = PathPicker(ZarcFitWindow)
+        
+        ZarcFitWindow.spinBoxHighFreq.setValue(0)
+        ZarcFitWindow.labelHighFreq.setText("{:.3E}".format(frequencyAll[0]))
+        ZarcFitWindow.spinBoxLowFreq.setValue(frequencyN-1)
+        ZarcFitWindow.labelLowFreq.setText("{:.3E}".format(frequencyAll[frequencyN-1]))
+
 
     def updateRadiOutSerial(ZarcFitWindow, value):
         ZarcFitWindow.updateFigs()
@@ -327,7 +333,10 @@ if __name__ == '__main__':
     pathobs = path+fnameobs
     temp = np.loadtxt(pathobs, skiprows=11, delimiter=",")
     obs = temp[:,4]+1j*temp[:,5]
-    frequency = temp[:,0].copy()
+    frequencyAll = temp[:,0].copy()
+    frequencyN = len (frequencyAll)
+    print (frequencyN, frequencyAll[0],frequencyAll[frequencyN-1],)
+    frequency = frequencyAll
     zarc = Zarcfit(obs, frequency)
     zarc.SetParametersSeries(0., Rinf, Rh, Fh, Ph, Rl, Fl, Pl, Rm, Fm, Pm, Re, Qe, Pef, Pei)     
     app = QtGui.QApplication(sys.argv)

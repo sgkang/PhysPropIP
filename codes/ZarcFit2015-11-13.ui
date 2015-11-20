@@ -1583,6 +1583,12 @@
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
           </property>
+          <property name="tickPosition">
+           <enum>QSlider::TicksBelow</enum>
+          </property>
+          <property name="tickInterval">
+           <number>10</number>
+          </property>
          </widget>
         </item>
         <item>
@@ -1593,23 +1599,23 @@
      </layout>
     </item>
     <item row="2" column="0">
-     <layout class="QGridLayout" name="gridLayout_2nd">
+     <layout class="QGridLayout" name="gridLayout_2nd" columnstretch="2,2,0,2,1,1">
       <item row="1" column="2">
-       <widget class="QSpinBox" name="spinBox_2">
+       <widget class="QSpinBox" name="spinBoxLowFreq">
+        <property name="maximum">
+         <number>10000</number>
+        </property>
         <property name="value">
          <number>38</number>
         </property>
        </widget>
       </item>
-      <item row="1" column="1" alignment="Qt::AlignRight">
-       <widget class="QLabel" name="label_3">
-        <property name="text">
-         <string>Low Freq Limit</string>
+      <item row="0" column="2">
+       <widget class="QSpinBox" name="spinBoxHighFreq">
+        <property name="maximum">
+         <number>10000</number>
         </property>
        </widget>
-      </item>
-      <item row="0" column="2">
-       <widget class="QSpinBox" name="spinBox"/>
       </item>
       <item row="0" column="0">
        <widget class="QLabel" name="label">
@@ -1622,20 +1628,6 @@
        <widget class="QLabel" name="label_2">
         <property name="text">
          <string>High Freq Limit</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="3">
-       <widget class="QLineEdit" name="lineEdit_2">
-        <property name="text">
-         <string>0.02512</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="3">
-       <widget class="QLineEdit" name="lineEdit_7">
-        <property name="text">
-         <string>1000000</string>
         </property>
        </widget>
       </item>
@@ -1674,6 +1666,30 @@
         </property>
        </widget>
       </item>
+      <item row="1" column="1">
+       <widget class="QLabel" name="label_3">
+        <property name="text">
+         <string>Low Freq Limit</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="3">
+       <widget class="QLabel" name="labelHighFreq">
+        <property name="text">
+         <string>1000000 Hz</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="3">
+       <widget class="QLabel" name="labelLowFreq">
+        <property name="text">
+         <string>0.02512 Hz</string>
+        </property>
+       </widget>
+      </item>
      </layout>
     </item>
     <item row="3" column="0">
@@ -1705,7 +1721,7 @@
      <x>0</x>
      <y>0</y>
      <width>952</width>
-     <height>21</height>
+     <height>18</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
