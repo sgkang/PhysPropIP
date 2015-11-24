@@ -263,11 +263,17 @@ class Main(QMainWindow, Ui_MainWindow):
         ZarcFitWindow.lineCole.axes.set_ylim(vminI, vmaxI*1.2)
 
         ZarcFitWindow.lineColeobs.set_data(ZarcFitWindow.obs.real, -ZarcFitWindow.obs.imag)
+        ZarcFitWindow.figCole.draw_artist(ZarcFitWindow.figCole.patch)                
         ZarcFitWindow.axCole.draw_artist(ZarcFitWindow.axCole.patch)        
         ZarcFitWindow.axCole.draw_artist(ZarcFitWindow.lineCole)
         ZarcFitWindow.axCole.draw_artist(ZarcFitWindow.lineColeobs)
         ZarcFitWindow.axCole.draw_artist(ZarcFitWindow.axCole.get_yaxis())
         ZarcFitWindow.axCole.draw_artist(ZarcFitWindow.axCole.get_xaxis())
+
+        ZarcFitWindow.axCole.draw_artist(ZarcFitWindow.axCole.spines['left'])
+        ZarcFitWindow.axCole.draw_artist(ZarcFitWindow.axCole.spines['right'])
+        ZarcFitWindow.axCole.draw_artist(ZarcFitWindow.axCole.spines['bottom'])
+        ZarcFitWindow.axCole.draw_artist(ZarcFitWindow.axCole.spines['top'])
 
         if ZarcFitWindow.radioButtonBodePlots.isChecked():
 
@@ -303,19 +309,26 @@ class Main(QMainWindow, Ui_MainWindow):
         else:
             Exception("Not implemented!! choose either bode or complex")               
 
+
         ZarcFitWindow.axColeRT.draw_artist(ZarcFitWindow.axColeRT.patch)
         ZarcFitWindow.axColeRT.draw_artist(ZarcFitWindow.lineColeRTpred)
         ZarcFitWindow.axColeRT.draw_artist(ZarcFitWindow.lineColeRTobs)        
         ZarcFitWindow.axColeRT.draw_artist(ZarcFitWindow.axColeRT.get_yaxis())
         ZarcFitWindow.axColeRT.draw_artist(ZarcFitWindow.axColeRT.get_xaxis())
-        
+        ZarcFitWindow.axColeRT.draw_artist(ZarcFitWindow.axColeRT.spines['left'])
+        ZarcFitWindow.axColeRT.draw_artist(ZarcFitWindow.axColeRT.spines['right'])
+        ZarcFitWindow.axColeRT.draw_artist(ZarcFitWindow.axColeRT.spines['bottom'])
+        ZarcFitWindow.axColeRT.draw_artist(ZarcFitWindow.axColeRT.spines['top'])
         
         ZarcFitWindow.axColeRB.draw_artist(ZarcFitWindow.axColeRB.patch)
         ZarcFitWindow.axColeRB.draw_artist(ZarcFitWindow.lineColeRBpred)        
         ZarcFitWindow.axColeRB.draw_artist(ZarcFitWindow.lineColeRBobs)   
         ZarcFitWindow.axColeRB.draw_artist(ZarcFitWindow.axColeRB.get_yaxis())
         ZarcFitWindow.axColeRB.draw_artist(ZarcFitWindow.axColeRB.get_xaxis())
-        
+        ZarcFitWindow.axColeRB.draw_artist(ZarcFitWindow.axColeRB.spines['left'])
+        ZarcFitWindow.axColeRB.draw_artist(ZarcFitWindow.axColeRB.spines['right'])
+        ZarcFitWindow.axColeRB.draw_artist(ZarcFitWindow.axColeRB.spines['bottom'])
+        ZarcFitWindow.axColeRB.draw_artist(ZarcFitWindow.axColeRB.spines['top'])        
         ZarcFitWindow.figCole.canvas.update()
         
 
