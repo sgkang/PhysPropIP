@@ -60,8 +60,12 @@ class Main(QMainWindow, Ui_MainWindow):
     axComplexReal = None
     axComplexImag = None
     OBSFNAME = None
+    OBSDATA = None
+    filesep = None
+
 
     def __init__(ZarcFitWindow, zarc, obs, frequency):
+        ZarcFitWindow.whichsystem()
         ZarcFitWindow.zarc = zarc
         ZarcFitWindow.obs = obs
         ZarcFitWindow.frequency = frequency
@@ -143,6 +147,17 @@ class Main(QMainWindow, Ui_MainWindow):
         # ZarcFitWindow.radioButtonBodePlots.clicked.connect(ZarcFitWindow.updateRadiOutBodePlots)
         # ZarcFitWindow.radioButtonComplexPlots.clicked.connect(ZarcFitWindow.updateRadiOutComplexPlots)
         ZarcFitWindow.PathPickerWindow = PathPicker(ZarcFitWindow)
+    
+    def whichsystem(ZarcFitWindow):
+        print(os.name)
+        if os.name == "nt": #Windows 
+            ZarcFitWindow.filesep = '\\'
+            print (os.name, ZarcFitWindow.filesep)
+        elif os.name == "posix": #Mac and Linux
+            ZarcFitWindow.filesep = '/'
+            print (os.name, ZarcFitWindow.filesep)
+        else:
+            Exception("Which system are you using?")
 
     def updateRadiOutSerial(ZarcFitWindow, value):
         ZarcFitWindow.updateFigs()
@@ -163,19 +178,26 @@ class Main(QMainWindow, Ui_MainWindow):
     def getOBSFNAME(ZarcFitWindow):
 
         ZarcFitWindow.OBSFNAME = []
+        ZarcFitWindow.OBSDATA = []
         if ZarcFitWindow.PathPickerWindow.fnamestr:                
             os.chdir(ZarcFitWindow.PathPickerWindow.fnamestr)                
             # Read *.z file in the path
             for file in glob.glob("*.z"):
                 ZarcFitWindow.OBSFNAME.append(file) 
-                print (file)
+                tempobs = np.loadtxt(file, skiprows=11, delimiter=',')
+                ZarcFitWindow.OBSDATA.append(tempobs)                
+                # print (ZarcFitWindow.PathPickerWindow.fnamestr+ZarcFitWindow.filesep+ZarcFitWindow.filesep+file)
+
             ZarcFitWindow.OBSFNAMEdirsize = len(ZarcFitWindow.OBSFNAME)
-            print(ZarcFitWindow.OBSFNAMEdirsize)
+            # Set maximum filenumber in ui 
             ZarcFitWindow.horizontalSliderObsFileNumber.setMaximum(ZarcFitWindow.OBSFNAMEdirsize-1)
 
     def ReadObsFile(ZarcFitWindow, value):
         ZarcFitWindow.lineEditOBSFNAME.setText(ZarcFitWindow.OBSFNAME[value])
-        print (value, ZarcFitWindow.OBSFNAME[value], ZarcFitWindow.lineEditPRMFNAME.text())
+        ZarcFitWindow.obs = ZarcFitWindow.OBSDATA[value][:,4]+1j*ZarcFitWindow.OBSDATA[value][:,5]
+        ZarcFitWindow.updateFigs()
+
+        # print (value, ZarcFitWindow.OBSFNAME[value], ZarcFitWindow.lineEditPRMFNAME.text())
                         
     def updateFigs(ZarcFitWindow):
 
