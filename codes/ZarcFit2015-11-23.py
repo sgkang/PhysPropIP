@@ -2,6 +2,8 @@ import numpy as np
 import sys, glob, os
 from PyQt4 import QtGui, QtCore
 from PyQt4.uic import loadUiType
+import matplotlib
+matplotlib.use('Qt4Agg')
 from matplotlib.figure import Figure
 import matplotlib.gridspec as gridspec
 import matplotlib.pyplot as plt
@@ -9,8 +11,8 @@ from matplotlib.backends.backend_qt4agg import (
     FigureCanvasQTAgg as FigureCanvas,
     NavigationToolbar2QT as NavigationToolbar)
 from Zarcfit import *
-    
-Ui_MainWindow, QMainWindow = loadUiType('ZarcFit2015-11-13.ui')  
+matplotlib.rcParams['axes.facecolor']="white"    
+Ui_MainWindow, QMainWindow = loadUiType('ZarcFit2015-11-23.ui')  
 
 class PathPicker(QtGui.QWidget):
 
@@ -57,72 +59,21 @@ class PathPicker(QtGui.QWidget):
 class Main(QMainWindow, Ui_MainWindow):
     
     fwdtype = "series"
+    plottype = "bode"
     axComplexReal = None
     axComplexImag = None
-    OBSFNAME = None
-    OBSDATA = None
-    filesep = None
-
+    obsfname = None
 
     def __init__(ZarcFitWindow, zarc, obs, frequency):
-        ZarcFitWindow.whichsystem()
+        
         ZarcFitWindow.zarc = zarc
         ZarcFitWindow.obs = obs
         ZarcFitWindow.frequency = frequency
 
-        figCole = Figure()
-        gs = gridspec.GridSpec(7, 7)
-        axCole = figCole.add_subplot(gs[:, :3])
-        axBodeMagn = figCole.add_subplot( gs[:3,4:])
-        axBodePhase = figCole.add_subplot(gs[4:,4:])
+        super(Main, ZarcFitWindow).__init__()
 
-        # Only for the initialization default is "series"
-        if ZarcFitWindow.fwdtype == "series":        
-            Z = ZarcFitWindow.zarc.Zseries(frequency)  
-        elif ZarcFitWindow.fwdtype == "parallel":
-            Z = ZarcFitWindow.zarc.Zparallel(frequency)  
-        else:
-            Exception("Not implemented!! choose either series or parallel")
-
-        lineColeobs,= axCole.plot(obs.real, obs.imag, 'kx-', lw=3)
-        lineCole,= axCole.plot(Z.real, Z.imag, 'ro')    
-        axCole.invert_yaxis()
-        axCole.set_xlabel("Real [Ohm]")
-        axCole.set_ylabel("Imag [Ohm]")
-        axCole.hold (False)
-        
-                
-        lineBodeMagnobs, = axBodeMagn.loglog(frequency, abs(obs), 'kx-', lw=3)
-        lineBodeMagn, = axBodeMagn.loglog(frequency, abs(Z), 'ro')    
-        axBodeMagn.invert_xaxis()
-        axBodeMagn.set_xlabel("Frequency [Hz]")
-        axBodeMagn.set_ylabel("Total Impedance [Ohm]")
-        axBodeMagn.legend(("Obs","Pred"), bbox_to_anchor=(1.25, 1.), fontsize = 10)
-        axBodeMagn.hold (False)    
-                    
-        lineBodePhaseobs,= axBodePhase.loglog(frequency, abs(np.angle(obs, deg=True)), 'kx-', lw=3)    
-        lineBodePhase,= axBodePhase.loglog(frequency, abs(np.angle(Z, deg=True)), 'ro')        
-        axBodePhase.invert_xaxis()
-        axBodePhase.set_xlabel("Frequency [Hz]")
-        axBodePhase.set_ylabel("Phase [deg]")
-        axBodePhase.hold (False)            
-
-        ZarcFitWindow.figCole = figCole
-        ZarcFitWindow.axCole = axCole
-        ZarcFitWindow.axBodeMagn = axBodeMagn
-        ZarcFitWindow.axBodePhase = axBodePhase
-        
-        ZarcFitWindow.lineCole = lineCole
-        ZarcFitWindow.lineBodeMagn = lineBodeMagn
-        ZarcFitWindow.lineBodePhase = lineBodePhase        
-
-        ZarcFitWindow.lineColeobs = lineColeobs
-        ZarcFitWindow.lineBodeMagnobs = lineBodeMagnobs
-        ZarcFitWindow.lineBodePhaseobs = lineBodePhaseobs
-
-        super(Main, ZarcFitWindow).__init__()    
-        ZarcFitWindow.setupUi(ZarcFitWindow) 
-        
+            
+        ZarcFitWindow.setupUi(ZarcFitWindow)         
         ZarcFitWindow.actionSelect_Path.triggered.connect(ZarcFitWindow.PickPath)
         ZarcFitWindow.actionSelect_Parameter_File.triggered.connect(ZarcFitWindow.SelectParameterFile)
         ZarcFitWindow.actionObs_File_Type.triggered.connect(ZarcFitWindow.SelectObsFileType)
@@ -166,59 +117,128 @@ class Main(QMainWindow, Ui_MainWindow):
         #Connect QRadiobutton
         ZarcFitWindow.radioButtonSerial.clicked.connect(ZarcFitWindow.updateRadiOutSerial)
         ZarcFitWindow.radioButtonParallel.clicked.connect(ZarcFitWindow.updateRadiOutParallel)        
-        # ZarcFitWindow.radioButtonBodePlots.clicked.connect(ZarcFitWindow.updateRadiOutBodePlots)
-        # ZarcFitWindow.radioButtonComplexPlots.clicked.connect(ZarcFitWindow.updateRadiOutComplexPlots)
+        ZarcFitWindow.radioButtonBodePlots.clicked.connect(ZarcFitWindow.updateRadiOutBodePlots)
+        ZarcFitWindow.radioButtonComplexPlots.clicked.connect(ZarcFitWindow.updateRadiOutComplexPlots)
         ZarcFitWindow.PathPickerWindow = PathPicker(ZarcFitWindow)
+        
         ZarcFitWindow.spinBoxHighFreq.setValue(0)
         ZarcFitWindow.labelHighFreq.setText("{:,}".format(frequencyAll[0])+" Hz")
         ZarcFitWindow.spinBoxLowFreq.setValue(frequencyN-1)
         ZarcFitWindow.labelLowFreq.setText("{:,}".format(frequencyAll[frequencyN-1])+" Hz")
+        ZarcFitWindow.initializeFigure()
 
-    def whichsystem(ZarcFitWindow):
-        print(os.name)
-        if os.name == "nt": #Windows 
-            ZarcFitWindow.filesep = '\\'
-            print (os.name, ZarcFitWindow.filesep)
-        elif os.name == "posix": #Mac and Linux
-            ZarcFitWindow.filesep = '/'
-            print (os.name, ZarcFitWindow.filesep)
-        else:
-            Exception("Which system are you using?")
 
-    def updateRadiOutBodePlots(ZarcFitWindow, value):
-        ZarcFitWindow.updateFigs()
-
-    def updateRadiOutComplexPlots(ZarcFitWindow, value):
-        ZarcFitWindow.updateFigs()
     
-    def PickPath(ZarcFitWindow):
-        ZarcFitWindow.PathPickerWindow.show()        
-        # ZarcFitWindow.PathPickerWindow.exec_()        
-    
-    def getOBSFNAME(ZarcFitWindow):
-
-        ZarcFitWindow.OBSFNAME = []
-        ZarcFitWindow.OBSDATA = []
-        if ZarcFitWindow.PathPickerWindow.fnamestr:                
-            os.chdir(ZarcFitWindow.PathPickerWindow.fnamestr)                
-            # Read *.z file in the path
-            for file in glob.glob("*.z"):
-                ZarcFitWindow.OBSFNAME.append(file) 
-                tempobs = np.loadtxt(file, skiprows=11, delimiter=',')
-                ZarcFitWindow.OBSDATA.append(tempobs)                
-                # print (ZarcFitWindow.PathPickerWindow.fnamestr+ZarcFitWindow.filesep+ZarcFitWindow.filesep+file)
-
-            ZarcFitWindow.OBSFNAMEdirsize = len(ZarcFitWindow.OBSFNAME)
-            # Set maximum filenumber in ui 
-            ZarcFitWindow.horizontalSliderObsFileNumber.setMaximum(ZarcFitWindow.OBSFNAMEdirsize-1)
-
-    def ReadObsFile(ZarcFitWindow, value):
-        ZarcFitWindow.lineEditOBSFNAME.setText(ZarcFitWindow.OBSFNAME[value])
-        ZarcFitWindow.obs = ZarcFitWindow.OBSDATA[value][:,4]+1j*ZarcFitWindow.OBSDATA[value][:,5]
-        ZarcFitWindow.updateFigs()
-        # print (value, ZarcFitWindow.OBSFNAME[value], ZarcFitWindow.lineEditPRMFNAME.text())
                         
     #### Matplotlib window ####
+    def initializeFigure(ZarcFitWindow):
+
+        hmlFreq = np.array([ZarcFitWindow.zarc.Fh,
+                            ZarcFitWindow.zarc.Fm,
+                            ZarcFitWindow.zarc.Fl,])
+
+        figCole = plt.figure(figsize=(30,30), facecolor="white")        
+        gs = gridspec.GridSpec(7, 7)        
+
+        axCole = figCole.add_subplot(gs[:, :3])                
+        axColeRT = figCole.add_subplot( gs[:3,4:])
+        axColeRB = figCole.add_subplot(gs[4:,4:])        
+        if ZarcFitWindow.radioButtonSerial.isChecked():
+            Z = ZarcFitWindow.zarc.Zseries(ZarcFitWindow.frequency)  
+#            Zhml = ZarcFitWindow.zarc.Zseries(hmlFreq) 
+#            Zhml = np.array([1.,2.,3.])*(1-1j)*1.E4            
+        elif ZarcFitWindow.radioButtonParallel.isChecked():
+            Z = ZarcFitWindow.zarc.Zparallel(ZarcFitWindow.frequency)  
+#            Zhml = ZarcFitWindow.zarc.Zseries(hmlFreq)              
+        else:
+            Exception("Not implemented!! choose either series or parallel")
+
+        mergedZreal = np.append(np.concatenate((Z.real, obs.real)), 0.)
+        mergedZimag = np.append(np.concatenate((-Z.imag, -obs.imag)), 0.)
+
+        # Cole-Cole Plot: Real vs Imag
+        lineColeZeroImag,= axCole.plot([min(mergedZreal), max(mergedZreal)], [0., 0.], 
+             color='salmon', linewidth=1)                                
+        lineColeZeroReal,= axCole.plot([0., 0.], [min(mergedZimag), max(mergedZimag)], 
+             color='salmon', linewidth=1)   
+#        scatterColehml = axCole.scatter(Zhml.real, Zhml.imag, 
+#            c=[2.,1.,0.], marker='+', linewidth=2, s=80)                                
+        lineCole,= axCole.plot(Z.real, -Z.imag, 
+             color='cyan', marker='D', markersize=3, linewidth=2)                                
+        lineColeobs,= axCole.plot(obs.real, -obs.imag, 
+             color='green', marker='s', markersize=2, linewidth=1) 
+        # axCole.invert_yaxis()
+        axCole.set_xlabel("Real [kOhm]")
+        axCole.set_ylabel("-Imag [kOhm]")
+        axColexlim = axCole.set_xlim(0., mergedZreal.max())
+        axColeylim = axCole.set_ylim(0., mergedZimag.max())        
+        axCole.hold (False)
+        
+        if ZarcFitWindow.radioButtonBodePlots.isChecked():
+
+            lineColeRTobs, = axColeRT.loglog(frequency, abs(obs),
+                color='green', marker='s', markersize=2, linewidth=1)
+            lineColeRTpred, = axColeRT.loglog(frequency, abs(Z),
+                color='cyan', marker='D', markersize=3, linewidth=2)    
+            lineColeRBobs,= axColeRB.loglog(frequency, abs(np.angle(obs, deg=True)),
+                color='green', marker='s', markersize=2, linewidth=1)    
+            lineColeRBpred,= axColeRB.loglog(frequency, abs(np.angle(Z, deg=True)),
+                color='cyan', marker='D', markersize=3, linewidth=2)    
+            axColeRT.set_ylabel("Total Impedance [Ohm]")
+            axColeRB.set_ylabel("Phase [deg]")
+
+        elif ZarcFitWindow.radioButtonComplexPlots.isChecked():
+
+            lineColeRTobs, = axColeRT.loglog(frequency, obs.real,
+                color='green', marker='s', markersize=2, linewidth=1)
+            lineColeRTpred, = axColeRT.loglog(frequency, Z.real,
+                color='cyan', marker='D', markersize=3, linewidth=2)    
+            lineColeRBobs,= axColeRB.loglog(frequency, -obs.imag,
+                color='green', marker='s', markersize=2, linewidth=1)    
+            lineColeRBpred,= axColeRB.loglog(frequency, -Z.imag,
+                color='cyan', marker='D', markersize=3, linewidth=2)    
+            axColeRT.set_ylabel("Real [Ohm]")
+            axColeRB.set_ylabel("-Imag [Ohm]")
+
+        else:
+            Exception("Not implemented!! choose either bode or complex")       
+
+
+        axColeRT.invert_xaxis()
+        axColeRT.set_xlabel("Frequency [Hz]")
+        axColeRT.xaxis.set_ticks_position('none') 
+        axColeRT.yaxis.set_ticks_position('none') 
+        # axColeRT.legend(("Obs","Pred"), bbox_to_anchor=(1.25, 1.), fontsize = 10)
+        axColeRT.hold (False)    
+        ZarcFitWindow.radioButtonBodePlots.clicked.connect(ZarcFitWindow.updateRadiOutBodePlots)
+        ZarcFitWindow.radioButtonComplexPlots.clicked.connect(ZarcFitWindow.updateRadiOutComplexPlots)
+
+
+        axColeRB.invert_xaxis()                
+        axColeRB.set_xlabel("Frequency [Hz]")
+        axColeRB.xaxis.set_ticks_position('none') 
+        axColeRB.yaxis.set_ticks_position('none')         
+
+        axColeRB.hold (False)   
+
+
+        figColebackground = figCole.canvas.copy_from_bbox(figCole.bbox)      
+        
+
+        ZarcFitWindow.figCole = figCole
+        ZarcFitWindow.figColebackground = figColebackground
+        ZarcFitWindow.axCole = axCole
+        ZarcFitWindow.axColeRT = axColeRT
+        ZarcFitWindow.axColeRB = axColeRB
+        
+        ZarcFitWindow.lineCole = lineCole
+        ZarcFitWindow.lineColeRTpred = lineColeRTpred
+        ZarcFitWindow.lineColeRBpred = lineColeRBpred        
+
+        ZarcFitWindow.lineColeobs = lineColeobs
+        ZarcFitWindow.lineColeRTobs = lineColeRTobs
+        ZarcFitWindow.lineColeRBobs = lineColeRBobs  
+              
     def addmplCole(ZarcFitWindow):
         ZarcFitWindow.canvas = FigureCanvas(ZarcFitWindow.figCole)
         ZarcFitWindow.mplCole.addWidget(ZarcFitWindow.canvas)
@@ -226,45 +246,77 @@ class Main(QMainWindow, Ui_MainWindow):
         ZarcFitWindow.toolbar = NavigationToolbar(ZarcFitWindow.canvas, ZarcFitWindow, coordinates=True)
         ZarcFitWindow.addToolBar(ZarcFitWindow.toolbar)   
         
-    def updateFigs(ZarcFitWindow):
+    def updateFigs(ZarcFitWindow):   
+
+        ZarcFitWindow.figCole.canvas.restore_region(ZarcFitWindow.figColebackground)         
         if ZarcFitWindow.radioButtonSerial.isChecked():
             Z = ZarcFitWindow.zarc.Zseries(ZarcFitWindow.frequency)  
         elif ZarcFitWindow.radioButtonParallel.isChecked():
             Z = ZarcFitWindow.zarc.Zparallel(ZarcFitWindow.frequency)  
         else:
             Exception("Not implemented!! choose either series or parallel")
+        vminR, vmaxR = (np.r_[Z.real, ZarcFitWindow.obs.real]).min(), (np.r_[Z.real, ZarcFitWindow.obs.real]).max()
+        vminI, vmaxI = (np.r_[-Z.imag, -ZarcFitWindow.obs.imag]).min(),(np.r_[-Z.imag, -ZarcFitWindow.obs.imag]).max() 
+        
+        ZarcFitWindow.lineCole.set_data(Z.real, -Z.imag)
+        ZarcFitWindow.lineCole.axes.set_xlim(0., vmaxR*1.2)
+        ZarcFitWindow.lineCole.axes.set_ylim(vminI, vmaxI*1.2)
 
-        ZarcFitWindow.lineCole.set_data(Z.real, Z.imag)
-        ZarcFitWindow.lineColeobs.set_data(ZarcFitWindow.obs.real, ZarcFitWindow.obs.imag)
+        ZarcFitWindow.lineColeobs.set_data(ZarcFitWindow.obs.real, -ZarcFitWindow.obs.imag)
         ZarcFitWindow.axCole.draw_artist(ZarcFitWindow.axCole.patch)        
         ZarcFitWindow.axCole.draw_artist(ZarcFitWindow.lineCole)
         ZarcFitWindow.axCole.draw_artist(ZarcFitWindow.lineColeobs)
+        ZarcFitWindow.axCole.draw_artist(ZarcFitWindow.axCole.get_yaxis())
+        ZarcFitWindow.axCole.draw_artist(ZarcFitWindow.axCole.get_xaxis())
 
-        ZarcFitWindow.lineBodeMagn.set_ydata(abs(Z))
-        ZarcFitWindow.lineBodeMagnobs.set_ydata(abs(ZarcFitWindow.obs))
-        ZarcFitWindow.axBodeMagn.draw_artist(ZarcFitWindow.axBodeMagn.patch)
-        ZarcFitWindow.axBodeMagn.draw_artist(ZarcFitWindow.lineBodeMagn)
-        ZarcFitWindow.axBodeMagn.draw_artist(ZarcFitWindow.lineBodeMagnobs)        
+        if ZarcFitWindow.radioButtonBodePlots.isChecked():
 
-        ZarcFitWindow.lineBodePhase.set_ydata(abs(np.angle(Z, deg=True)))
-        ZarcFitWindow.lineBodePhaseobs.set_ydata(abs(np.angle(ZarcFitWindow.obs, deg=True)))
-        ZarcFitWindow.axBodePhase.draw_artist(ZarcFitWindow.axBodePhase.patch)
-        ZarcFitWindow.axBodePhase.draw_artist(ZarcFitWindow.lineBodePhase)        
-        ZarcFitWindow.axBodePhase.draw_artist(ZarcFitWindow.lineBodePhaseobs)  
+            zpredabs = abs(Z)
+            zobsabs = abs(ZarcFitWindow.obs)
+            ZarcFitWindow.lineColeRTpred.set_data(ZarcFitWindow.frequency, zpredabs)
+            ZarcFitWindow.lineColeRTobs.set_data(ZarcFitWindow.frequency,zobsabs)
+            zpredphase = abs(np.angle(Z, deg=True))
+            zobsphase = abs(np.angle(ZarcFitWindow.obs, deg=True))
+            ZarcFitWindow.lineColeRBpred.set_data(ZarcFitWindow.frequency, zpredphase)
+            ZarcFitWindow.lineColeRBobs.set_data(ZarcFitWindow.frequency, zobsphase)            
+            vminAbs, vmaxAbs = (np.r_[zpredabs, zobsabs]).min(), (np.r_[zpredabs, zobsabs]).max()
+            vminPhase, vmaxPhase = (np.r_[zpredphase, zobsphase]).min(), (np.r_[zpredphase, zobsphase]).max()
+            ZarcFitWindow.lineColeRTpred.axes.set_ylim(vminAbs*0.8, vmaxAbs*1.2)
+            ZarcFitWindow.lineColeRBpred.axes.set_ylim(vminPhase*0.8, vmaxPhase*1.2)        
+            ZarcFitWindow.lineColeRTpred.axes.set_ylabel("Total Impedance [Ohm]")
+            ZarcFitWindow.lineColeRBpred.axes.set_ylabel("Phase [deg]")     
 
-        ZarcFitWindow.figCole.canvas.update()
+        elif ZarcFitWindow.radioButtonComplexPlots.isChecked():
+
+            zpredreal = Z.real
+            zobsreal = ZarcFitWindow.obs.real
+            ZarcFitWindow.lineColeRTpred.set_data(ZarcFitWindow.frequency, zpredreal)
+            ZarcFitWindow.lineColeRTobs.set_data(ZarcFitWindow.frequency,zobsreal)
+            zpredimag = -Z.imag
+            zobsimag = -ZarcFitWindow.obs.imag
+            ZarcFitWindow.lineColeRBpred.set_data(ZarcFitWindow.frequency, zpredimag)
+            ZarcFitWindow.lineColeRBobs.set_data(ZarcFitWindow.frequency, zobsimag)            
+            ZarcFitWindow.lineColeRTpred.axes.set_ylim(vminR*0.8, vmaxR*1.2)
+            ZarcFitWindow.lineColeRBpred.axes.set_ylim(vminI*0.8, vmaxI*11.2)   
+            ZarcFitWindow.lineColeRTpred.axes.set_ylabel("Real [Ohm]")
+            ZarcFitWindow.lineColeRBpred.axes.set_ylabel("-Imag [Ohm]")     
+        else:
+            Exception("Not implemented!! choose either bode or complex")               
+
+        ZarcFitWindow.axColeRT.draw_artist(ZarcFitWindow.axColeRT.patch)
+        ZarcFitWindow.axColeRT.draw_artist(ZarcFitWindow.lineColeRTpred)
+        ZarcFitWindow.axColeRT.draw_artist(ZarcFitWindow.lineColeRTobs)        
+        ZarcFitWindow.axColeRT.draw_artist(ZarcFitWindow.axColeRT.get_yaxis())
+        ZarcFitWindow.axColeRT.draw_artist(ZarcFitWindow.axColeRT.get_xaxis())
         
-    def updateRadiOutSerial(ZarcFitWindow, value):
-        ZarcFitWindow.updateFigs()
-
-    def updateRadiOutParallel(ZarcFitWindow, value):
-        ZarcFitWindow.updateFigs()        
-    
-    def updateRadiOutBodePlots(ZarcFitWindow, value):
-        ZarcFitWindow.updateFigs()
-
-    def updateRadiOutComplexPlots(ZarcFitWindow, value):
-        ZarcFitWindow.updateFigs()
+        
+        ZarcFitWindow.axColeRB.draw_artist(ZarcFitWindow.axColeRB.patch)
+        ZarcFitWindow.axColeRB.draw_artist(ZarcFitWindow.lineColeRBpred)        
+        ZarcFitWindow.axColeRB.draw_artist(ZarcFitWindow.lineColeRBobs)   
+        ZarcFitWindow.axColeRB.draw_artist(ZarcFitWindow.axColeRB.get_yaxis())
+        ZarcFitWindow.axColeRB.draw_artist(ZarcFitWindow.axColeRB.get_xaxis())
+        
+        ZarcFitWindow.figCole.canvas.update()
         
 
     #### Menus and Buttons ####
@@ -274,20 +326,30 @@ class Main(QMainWindow, Ui_MainWindow):
         # ZarcFitWindow.PathPickerWindow.exec_()        
     
     def getOBSFNAME(ZarcFitWindow):
-        ZarcFitWindow.OBSFNAME = []
+
+        ZarcFitWindow.obsfname = []
+        ZarcFitWindow.obsdata = []
         if ZarcFitWindow.PathPickerWindow.fnamestr:                
             os.chdir(ZarcFitWindow.PathPickerWindow.fnamestr)                
             # Read *.z file in the path
             for file in glob.glob("*.z"):
-                ZarcFitWindow.OBSFNAME.append(file) 
-                print (file)
-            ZarcFitWindow.OBSFNAMEdirsize = len(ZarcFitWindow.OBSFNAME)
-            print(ZarcFitWindow.OBSFNAMEdirsize)
-            ZarcFitWindow.horizontalSliderObsFileNumber.setMaximum(ZarcFitWindow.OBSFNAMEdirsize-1)
+                ZarcFitWindow.obsfname.append(file) 
+                tempobs = np.loadtxt(file, skiprows=11, delimiter=',')
+                ZarcFitWindow.obsdata.append(tempobs)                
+                # print (ZarcFitWindow.PathPickerWindow.fnamestr+ZarcFitWindow.filesep+ZarcFitWindow.filesep+file)
+
+            ZarcFitWindow.obsfnamedirsize = len(ZarcFitWindow.obsfname)
+            # Set maximum filenumber in ui 
+            ZarcFitWindow.horizontalSliderObsFileNumber.setMaximum(ZarcFitWindow.obsfnamedirsize-1)
+
 
     def ReadObsFile(ZarcFitWindow, value):
-        ZarcFitWindow.lineEditOBSFNAME.setText(ZarcFitWindow.OBSFNAME[value])
-        print (value, ZarcFitWindow.OBSFNAME[value], ZarcFitWindow.lineEditPRMFNAME.text())
+        ZarcFitWindow.obs = ZarcFitWindow.obsdata[value][:,4]+ZarcFitWindow.obsdata[value][:,5]*1j
+        ZarcFitWindow.frequency = ZarcFitWindow.obsdata[value][:,0]
+        ZarcFitWindow.zarc.frequency = ZarcFitWindow.frequency
+        ZarcFitWindow.updateFigs()               
+        ZarcFitWindow.lineEditOBSFNAME.setText(ZarcFitWindow.obsfname[value]) 
+        print (value, ZarcFitWindow.obsfname[value], ZarcFitWindow.lineEditPRMFNAME.text())
 
     def SelectParameterFile(ZarcFitWindow):
         print ("SelectParameterFile")
@@ -334,6 +396,21 @@ class Main(QMainWindow, Ui_MainWindow):
         
     def WriteParam(ZarcFitWindow):
         print ("Write Param")
+        
+    def updateRadiOutSerial(ZarcFitWindow, value):
+        ZarcFitWindow.fwdtype = "series"
+        ZarcFitWindow.updateFigs()
+
+    def updateRadiOutParallel(ZarcFitWindow, value):
+        ZarcFitWindow.fwdtype = "parallel"
+        ZarcFitWindow.updateFigs()        
+    
+    def updateRadiOutBodePlots(ZarcFitWindow, value):
+        ZarcFitWindow.updateFigs()
+
+    def updateRadiOutComplexPlots(ZarcFitWindow, value):
+        ZarcFitWindow.updateFigs()
+
 
     # # # Help # # #
     def ZarcFitHelp(ZarcFitWindow):
