@@ -1556,7 +1556,7 @@
        </widget>
       </item>
       <item row="2" column="2">
-       <widget class="QLineEdit" name="lineEditOBSFNAME">
+       <widget class="QLineEdit" name="lineEditObsFName">
         <property name="text">
          <string>BC14076 2015-05-03.z</string>
         </property>
@@ -1592,7 +1592,11 @@
          </widget>
         </item>
         <item>
-         <widget class="QSpinBox" name="spinBoxObsFileNumber"/>
+         <widget class="QSpinBox" name="spinBoxObsFileNumber">
+          <property name="maximum">
+           <number>9999</number>
+          </property>
+         </widget>
         </item>
        </layout>
       </item>

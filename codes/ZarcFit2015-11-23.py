@@ -23,7 +23,7 @@ class PathPicker(QtGui.QWidget):
         super(PathPicker, self).__init__()
         self.setWindowTitle('path picker')
         # Set the window dimensions
-        self.resize(300,75)       
+        self.resize(300,100)       
         # vertical layout for widgets
         self.vbox = QtGui.QVBoxLayout()
         self.setLayout(self.vbox)
@@ -35,6 +35,11 @@ class PathPicker(QtGui.QWidget):
         self.vbox.addWidget(btn)        
         # Connect the clicked signal to the get_fname handler
         self.connect(btn, QtCore.SIGNAL('clicked()'), self.get_fname)
+        # Create a push button labelled 'Return' and add it to our layout
+        btn1 = QtGui.QPushButton('Return to main window', self)
+        self.vbox.addWidget(btn1)        
+        # Connect the clicked signal to the get_fname handler
+        self.connect(btn1, QtCore.SIGNAL('clicked()'), self.close)
         # Connect to ZarcFitWindow
         self.ZarcFitWindow = ZarcFitWindow
 
@@ -51,10 +56,13 @@ class PathPicker(QtGui.QWidget):
         if fname:
             self.lbl.setText(fname)
             self.ZarcFitWindow.lineEditPath.setText(fname)
-            self.ZarcFitWindow.getOBSFNAME()
+            self.ZarcFitWindow.getObsFName()
+            with open(scriptPath+"\ZarcFit.ini", "w") as ini_file:
+                print(fname, file=ini_file)
         else:
             self.lbl.setText('No path selected')
 
+                   
 
 class Main(QMainWindow, Ui_MainWindow):
     
@@ -62,7 +70,7 @@ class Main(QMainWindow, Ui_MainWindow):
     plottype = "bode"
     axComplexReal = None
     axComplexImag = None
-    obsfname = None
+    ObsFName = None
 
     def __init__(ZarcFitWindow, zarc, obs, frequency):
         
@@ -141,7 +149,7 @@ class Main(QMainWindow, Ui_MainWindow):
         gs = gridspec.GridSpec(7, 7)        
 
         axCole = figCole.add_subplot(gs[:, :3])                
-        axColeRT = figCole.add_subplot( gs[:3,4:])
+        axColeRT = figCole.add_subplot(gs[:3,4:])
         axColeRB = figCole.add_subplot(gs[4:,4:])        
         if ZarcFitWindow.radioButtonSerial.isChecked():
             Z = ZarcFitWindow.zarc.Zseries(ZarcFitWindow.frequency)  
@@ -185,7 +193,7 @@ class Main(QMainWindow, Ui_MainWindow):
             lineColeRBpred,= axColeRB.loglog(frequency, abs(np.angle(Z, deg=True)),
                 color='cyan', marker='D', markersize=3, linewidth=2)    
             axColeRT.set_ylabel("Total Impedance [Ohm]")
-            axColeRB.set_ylabel("Phase [deg]")
+            axColeRB.set_ylabel("Abs(Phase) [deg]")
 
         elif ZarcFitWindow.radioButtonComplexPlots.isChecked():
 
@@ -193,12 +201,12 @@ class Main(QMainWindow, Ui_MainWindow):
                 color='green', marker='s', markersize=2, linewidth=1)
             lineColeRTpred, = axColeRT.loglog(frequency, Z.real,
                 color='cyan', marker='D', markersize=3, linewidth=2)    
-            lineColeRBobs,= axColeRB.loglog(frequency, -obs.imag,
+            lineColeRBobs,= axColeRB.loglog(frequency, abs(obs.imag),
                 color='green', marker='s', markersize=2, linewidth=1)    
-            lineColeRBpred,= axColeRB.loglog(frequency, -Z.imag,
+            lineColeRBpred,= axColeRB.loglog(frequency, abs(Z.imag),
                 color='cyan', marker='D', markersize=3, linewidth=2)    
             axColeRT.set_ylabel("Real [Ohm]")
-            axColeRB.set_ylabel("-Imag [Ohm]")
+            axColeRB.set_ylabel("Abs(Imag) [Ohm]")
 
         else:
             Exception("Not implemented!! choose either bode or complex")       
@@ -290,7 +298,7 @@ class Main(QMainWindow, Ui_MainWindow):
             ZarcFitWindow.lineColeRTpred.axes.set_ylim(vminAbs*0.8, vmaxAbs*1.2)
             ZarcFitWindow.lineColeRBpred.axes.set_ylim(vminPhase*0.8, vmaxPhase*1.2)        
             ZarcFitWindow.lineColeRTpred.axes.set_ylabel("Total Impedance [Ohm]")
-            ZarcFitWindow.lineColeRBpred.axes.set_ylabel("Phase [deg]")     
+            ZarcFitWindow.lineColeRBpred.axes.set_ylabel("Abs(Phase) [deg]")     
 
         elif ZarcFitWindow.radioButtonComplexPlots.isChecked():
 
@@ -298,14 +306,14 @@ class Main(QMainWindow, Ui_MainWindow):
             zobsreal = ZarcFitWindow.obs.real
             ZarcFitWindow.lineColeRTpred.set_data(ZarcFitWindow.frequency, zpredreal)
             ZarcFitWindow.lineColeRTobs.set_data(ZarcFitWindow.frequency,zobsreal)
-            zpredimag = -Z.imag
-            zobsimag = -ZarcFitWindow.obs.imag
+            zpredimag = abs(Z.imag)
+            zobsimag = abs(ZarcFitWindow.obs.imag)
             ZarcFitWindow.lineColeRBpred.set_data(ZarcFitWindow.frequency, zpredimag)
             ZarcFitWindow.lineColeRBobs.set_data(ZarcFitWindow.frequency, zobsimag)            
             ZarcFitWindow.lineColeRTpred.axes.set_ylim(vminR*0.8, vmaxR*1.2)
             ZarcFitWindow.lineColeRBpred.axes.set_ylim(vminI*0.8, vmaxI*11.2)   
             ZarcFitWindow.lineColeRTpred.axes.set_ylabel("Real [Ohm]")
-            ZarcFitWindow.lineColeRBpred.axes.set_ylabel("-Imag [Ohm]")     
+            ZarcFitWindow.lineColeRBpred.axes.set_ylabel("Abs(Imag) [Ohm]")     
         else:
             Exception("Not implemented!! choose either bode or complex")               
 
@@ -331,6 +339,8 @@ class Main(QMainWindow, Ui_MainWindow):
         ZarcFitWindow.axColeRB.draw_artist(ZarcFitWindow.axColeRB.spines['top'])        
         ZarcFitWindow.figCole.canvas.update()
         
+    def Rescale(ZarcFitWindow):
+        print ("Rescale")
 
     #### Menus and Buttons ####
     # # # Files # # #
@@ -338,22 +348,22 @@ class Main(QMainWindow, Ui_MainWindow):
         ZarcFitWindow.PathPickerWindow.show()        
         # ZarcFitWindow.PathPickerWindow.exec_()        
     
-    def getOBSFNAME(ZarcFitWindow):
+    def getObsFName(ZarcFitWindow):
 
-        ZarcFitWindow.obsfname = []
+        ZarcFitWindow.ObsFName = []
         ZarcFitWindow.obsdata = []
         if ZarcFitWindow.PathPickerWindow.fnamestr:                
             os.chdir(ZarcFitWindow.PathPickerWindow.fnamestr)                
             # Read *.z file in the path
             for file in glob.glob("*.z"):
-                ZarcFitWindow.obsfname.append(file) 
+                ZarcFitWindow.ObsFName.append(file) 
                 tempobs = np.loadtxt(file, skiprows=11, delimiter=',')
                 ZarcFitWindow.obsdata.append(tempobs)                
                 # print (ZarcFitWindow.PathPickerWindow.fnamestr+ZarcFitWindow.filesep+ZarcFitWindow.filesep+file)
 
-            ZarcFitWindow.obsfnamedirsize = len(ZarcFitWindow.obsfname)
+            ZarcFitWindow.ObsFNamedirsize = len(ZarcFitWindow.ObsFName)
             # Set maximum filenumber in ui 
-            ZarcFitWindow.horizontalSliderObsFileNumber.setMaximum(ZarcFitWindow.obsfnamedirsize-1)
+            ZarcFitWindow.horizontalSliderObsFileNumber.setMaximum(ZarcFitWindow.ObsFNamedirsize-1)
 
 
     def ReadObsFile(ZarcFitWindow, value):
@@ -361,8 +371,8 @@ class Main(QMainWindow, Ui_MainWindow):
         ZarcFitWindow.frequency = ZarcFitWindow.obsdata[value][:,0]
         ZarcFitWindow.zarc.frequency = ZarcFitWindow.frequency
         ZarcFitWindow.updateFigs()               
-        ZarcFitWindow.lineEditOBSFNAME.setText(ZarcFitWindow.obsfname[value]) 
-        print (value, ZarcFitWindow.obsfname[value], ZarcFitWindow.lineEditPRMFNAME.text())
+        ZarcFitWindow.lineEditObsFName.setText(ZarcFitWindow.ObsFName[value]) 
+        print (value, ZarcFitWindow.ObsFName[value], ZarcFitWindow.lineEditPRMFNAME.text())
 
     def SelectParameterFile(ZarcFitWindow):
         print ("SelectParameterFile")
@@ -541,6 +551,14 @@ if __name__ == '__main__':
     Qe = 1.E-4
     Pef = 0.5
     Pei = 0.05    
+
+    scriptPath = os.getcwd()
+    with open(scriptPath+"\ZarcFit.ini", "r") as ini_file:
+        path = ini_file.read()
+    print(path)
+    # ZarcFitWindow.PathPickerWindow.fnamestr = path
+    # ZarcFitWindow.lineEditPath.setText(path)
+    # ZarcFitWindow.getObsFName()
 
     path = "../data/HVC2014_10Grenon/"
     fnameobs = "BC13867-A 2014-10-23.z"
