@@ -11,8 +11,8 @@ def Zarcfun(Rx, Qx, px, frequency):
 	return out
 
 
-class Zarcfit(object):
-	"""docstring for Zarcfit"""
+class ZarcfitCalculations(object):
+	"""docstring for ZarcfitCalculations"""
 
 	obs = None
 	predSeries = None

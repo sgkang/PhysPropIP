@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qt4agg import (
     FigureCanvasQTAgg as FigureCanvas,
     NavigationToolbar2QT as NavigationToolbar)
-from Zarcfit import *
+from ZarcfitCalculations import *
 matplotlib.rcParams['axes.facecolor']="white"    
 Ui_MainWindow, QMainWindow = loadUiType('ZarcFit2015-11-23.ui')  
 
@@ -624,7 +624,7 @@ if __name__ == '__main__':
     frequencyN = len (frequencyAll)
     print (frequencyN, frequencyAll[0],frequencyAll[frequencyN-1],)
     frequency = frequencyAll
-    zarc = Zarcfit(obs, frequency)
+    zarc = ZarcfitCalculations(obs, frequency)
     zarc.SetParametersSeries(0., Rinf, Rh, Fh, Ph, Rl, Fl, Pl, Rm, Fm, Pm, Re, Qe, Pef, Pei)     
     app = QtGui.QApplication(sys.argv)
     main = Main(zarc, obs, frequency)
