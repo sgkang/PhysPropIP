@@ -145,11 +145,10 @@ class Main(QMainWindow, Ui_MainWindow):
         axColeRB = figCole.add_subplot(gs[4:,4:])        
         if ZarcFitWindow.radioButtonSerial.isChecked():
             Z = ZarcFitWindow.zarc.Zseries(ZarcFitWindow.frequency)  
-#            Zhml = ZarcFitWindow.zarc.Zseries(hmlFreq) 
-#            Zhml = np.array([1.,2.,3.])*(1-1j)*1.E4            
+            Zhml = ZarcFitWindow.zarc.Zseries(hmlFreq) 
         elif ZarcFitWindow.radioButtonParallel.isChecked():
             Z = ZarcFitWindow.zarc.Zparallel(ZarcFitWindow.frequency)  
-#            Zhml = ZarcFitWindow.zarc.Zseries(hmlFreq)              
+            Zhml = ZarcFitWindow.zarc.Zparallel(hmlFreq)              
         else:
             Exception("Not implemented!! choose either series or parallel")
 
@@ -161,12 +160,18 @@ class Main(QMainWindow, Ui_MainWindow):
              color='salmon', linewidth=1)                                
         lineColeZeroReal,= axCole.plot([0., 0.], [min(mergedZimag), max(mergedZimag)], 
              color='salmon', linewidth=1)   
-#        scatterColehml = axCole.scatter(Zhml.real, Zhml.imag, 
-#            c=[2.,1.,0.], marker='+', linewidth=2, s=80)                                
+        # axCole.scatter(Zhml.real, -Zhml.imag, 
+        #    c=[2.,1.,0.], marker='+', linewidth=2, s=100)                                
+
         lineCole,= axCole.plot(Z.real, -Z.imag, 
              color='cyan', marker='D', markersize=3, linewidth=2)                                
         lineColeobs,= axCole.plot(obs.real, -obs.imag, 
              color='green', marker='s', markersize=2, linewidth=1) 
+
+        lineColeFh, =axCole.plot(Zhml[0].real, -Zhml[0].imag,'r+', ms=15, linewidth=3)
+        lineColeFm, =axCole.plot(Zhml[1].real, -Zhml[1].imag,'g+', ms=15, linewidth=3)
+        lineColeFl, =axCole.plot(Zhml[2].real, -Zhml[2].imag,'b+', ms=15, linewidth=3)
+
         # axCole.invert_yaxis()
         axCole.set_xlabel("Real [kOhm]")
         axCole.set_ylabel("-Imag [kOhm]")
@@ -184,6 +189,16 @@ class Main(QMainWindow, Ui_MainWindow):
                 color='green', marker='s', markersize=2, linewidth=1)    
             lineColeRBpred,= axColeRB.loglog(frequency, abs(np.angle(Z, deg=True)),
                 color='cyan', marker='D', markersize=3, linewidth=2)    
+
+            lineColeRTFh, =axColeRT.plot(ZarcFitWindow.zarc.Fh, abs(Zhml[0]), 'r+', ms=15, linewidth=3)
+            lineColeRTFm, =axColeRT.plot(ZarcFitWindow.zarc.Fm, abs(Zhml[1]), 'g+', ms=15, linewidth=3)
+            lineColeRTFl, =axColeRT.plot(ZarcFitWindow.zarc.Fl, abs(Zhml[2]), 'b+', ms=15, linewidth=3)
+
+            lineColeRBFh, =axColeRB.plot(ZarcFitWindow.zarc.Fh, abs(np.angle(Zhml[0], deg=True)), 'r+', ms=15, linewidth=3)
+            lineColeRBFm, =axColeRB.plot(ZarcFitWindow.zarc.Fm, abs(np.angle(Zhml[1], deg=True)), 'g+', ms=15, linewidth=3)
+            lineColeRBFl, =axColeRB.plot(ZarcFitWindow.zarc.Fl, abs(np.angle(Zhml[2], deg=True)), 'b+', ms=15, linewidth=3)
+
+
             axColeRT.set_ylabel("Total Impedance [Ohm]")
             axColeRB.set_ylabel("Phase [deg]")
 
@@ -197,6 +212,15 @@ class Main(QMainWindow, Ui_MainWindow):
                 color='green', marker='s', markersize=2, linewidth=1)    
             lineColeRBpred,= axColeRB.loglog(frequency, -Z.imag,
                 color='cyan', marker='D', markersize=3, linewidth=2)    
+
+            lineColeRTFh, =axColeRT.plot(ZarcFitWindow.zarc.Fh, Zhml[0].real, 'r+', ms=15, linewidth=3)
+            lineColeRTFm, =axColeRT.plot(ZarcFitWindow.zarc.Fm, Zhml[1].real, 'g+', ms=15, linewidth=3)
+            lineColeRTFl, =axColeRT.plot(ZarcFitWindow.zarc.Fl, Zhml[2].real, 'b+', ms=15, linewidth=3)
+            
+            lineColeRBFh, =axColeRB.plot(ZarcFitWindow.zarc.Fh, -Zhml[0].imag, 'r+', ms=15, linewidth=3)
+            lineColeRBFm, =axColeRB.plot(ZarcFitWindow.zarc.Fm, -Zhml[1].imag, 'g+', ms=15, linewidth=3)
+            lineColeRBFl, =axColeRB.plot(ZarcFitWindow.zarc.Fl, -Zhml[2].imag, 'b+', ms=15, linewidth=3)
+
             axColeRT.set_ylabel("Real [Ohm]")
             axColeRB.set_ylabel("-Imag [Ohm]")
 
@@ -238,6 +262,17 @@ class Main(QMainWindow, Ui_MainWindow):
         ZarcFitWindow.lineColeobs = lineColeobs
         ZarcFitWindow.lineColeRTobs = lineColeRTobs
         ZarcFitWindow.lineColeRBobs = lineColeRBobs  
+
+        ZarcFitWindow.lineColeFh = lineColeFh 
+        ZarcFitWindow.lineColeFm = lineColeFm 
+        ZarcFitWindow.lineColeFl = lineColeFl             
+
+        ZarcFitWindow.lineColeRTFh = lineColeRTFh 
+        ZarcFitWindow.lineColeRTFm = lineColeRTFm 
+        ZarcFitWindow.lineColeRTFl = lineColeRTFl             
+        ZarcFitWindow.lineColeRBFh = lineColeRBFh 
+        ZarcFitWindow.lineColeRBFm = lineColeRBFm 
+        ZarcFitWindow.lineColeRBFl = lineColeRBFl         
               
     def addmplCole(ZarcFitWindow):
         ZarcFitWindow.canvas = FigureCanvas(ZarcFitWindow.figCole)
@@ -247,12 +282,18 @@ class Main(QMainWindow, Ui_MainWindow):
         ZarcFitWindow.addToolBar(ZarcFitWindow.toolbar)   
         
     def updateFigs(ZarcFitWindow):   
+        
+        hmlFreq = np.array([ZarcFitWindow.zarc.Fh,
+                            ZarcFitWindow.zarc.Fm,
+                            ZarcFitWindow.zarc.Fl,])
 
         ZarcFitWindow.figCole.canvas.restore_region(ZarcFitWindow.figColebackground)         
         if ZarcFitWindow.radioButtonSerial.isChecked():
             Z = ZarcFitWindow.zarc.Zseries(ZarcFitWindow.frequency)  
+            Zhml = ZarcFitWindow.zarc.Zseries(hmlFreq) 
         elif ZarcFitWindow.radioButtonParallel.isChecked():
             Z = ZarcFitWindow.zarc.Zparallel(ZarcFitWindow.frequency)  
+            Zhml = ZarcFitWindow.zarc.Zparallel(hmlFreq) 
         else:
             Exception("Not implemented!! choose either series or parallel")
         vminR, vmaxR = (np.r_[Z.real, ZarcFitWindow.obs.real]).min(), (np.r_[Z.real, ZarcFitWindow.obs.real]).max()
@@ -261,6 +302,10 @@ class Main(QMainWindow, Ui_MainWindow):
         ZarcFitWindow.lineCole.set_data(Z.real, -Z.imag)
         ZarcFitWindow.lineCole.axes.set_xlim(0., vmaxR*1.2)
         ZarcFitWindow.lineCole.axes.set_ylim(vminI, vmaxI*1.2)
+
+        ZarcFitWindow.lineColeFh.set_data(Zhml[0].real, -Zhml[0].imag)
+        ZarcFitWindow.lineColeFm.set_data(Zhml[1].real, -Zhml[1].imag)
+        ZarcFitWindow.lineColeFl.set_data(Zhml[2].real, -Zhml[2].imag)
 
         ZarcFitWindow.lineColeobs.set_data(ZarcFitWindow.obs.real, -ZarcFitWindow.obs.imag)
         ZarcFitWindow.figCole.draw_artist(ZarcFitWindow.figCole.patch)                
@@ -274,6 +319,11 @@ class Main(QMainWindow, Ui_MainWindow):
         ZarcFitWindow.axCole.draw_artist(ZarcFitWindow.axCole.spines['right'])
         ZarcFitWindow.axCole.draw_artist(ZarcFitWindow.axCole.spines['bottom'])
         ZarcFitWindow.axCole.draw_artist(ZarcFitWindow.axCole.spines['top'])
+
+        ZarcFitWindow.axCole.draw_artist(ZarcFitWindow.lineColeFh)
+        ZarcFitWindow.axCole.draw_artist(ZarcFitWindow.lineColeFm)
+        ZarcFitWindow.axCole.draw_artist(ZarcFitWindow.lineColeFl)
+
 
         if ZarcFitWindow.radioButtonBodePlots.isChecked():
 
@@ -292,6 +342,13 @@ class Main(QMainWindow, Ui_MainWindow):
             ZarcFitWindow.lineColeRTpred.axes.set_ylabel("Total Impedance [Ohm]")
             ZarcFitWindow.lineColeRBpred.axes.set_ylabel("Phase [deg]")     
 
+            ZarcFitWindow.lineColeRTFh.set_data(ZarcFitWindow.zarc.Fh, abs(Zhml[0]))
+            ZarcFitWindow.lineColeRTFm.set_data(ZarcFitWindow.zarc.Fm, abs(Zhml[1]))
+            ZarcFitWindow.lineColeRTFl.set_data(ZarcFitWindow.zarc.Fl, abs(Zhml[2]))
+            ZarcFitWindow.lineColeRBFh.set_data(ZarcFitWindow.zarc.Fh, abs(np.angle(Zhml[0], deg=True) ))
+            ZarcFitWindow.lineColeRBFm.set_data(ZarcFitWindow.zarc.Fm, abs(np.angle(Zhml[1], deg=True) ))
+            ZarcFitWindow.lineColeRBFl.set_data(ZarcFitWindow.zarc.Fl, abs(np.angle(Zhml[2], deg=True) ))            
+
         elif ZarcFitWindow.radioButtonComplexPlots.isChecked():
 
             zpredreal = Z.real
@@ -305,7 +362,15 @@ class Main(QMainWindow, Ui_MainWindow):
             ZarcFitWindow.lineColeRTpred.axes.set_ylim(vminR*0.8, vmaxR*1.2)
             ZarcFitWindow.lineColeRBpred.axes.set_ylim(vminI*0.8, vmaxI*11.2)   
             ZarcFitWindow.lineColeRTpred.axes.set_ylabel("Real [Ohm]")
-            ZarcFitWindow.lineColeRBpred.axes.set_ylabel("-Imag [Ohm]")     
+            ZarcFitWindow.lineColeRBpred.axes.set_ylabel("-Imag [Ohm]")    
+
+            ZarcFitWindow.lineColeRTFh.set_data(ZarcFitWindow.zarc.Fh, Zhml[0].real)
+            ZarcFitWindow.lineColeRTFm.set_data(ZarcFitWindow.zarc.Fm, Zhml[1].real)
+            ZarcFitWindow.lineColeRTFl.set_data(ZarcFitWindow.zarc.Fl, Zhml[2].real)
+            ZarcFitWindow.lineColeRBFh.set_data(ZarcFitWindow.zarc.Fh, -Zhml[0].imag)
+            ZarcFitWindow.lineColeRBFm.set_data(ZarcFitWindow.zarc.Fm, -Zhml[1].imag)
+            ZarcFitWindow.lineColeRBFl.set_data(ZarcFitWindow.zarc.Fl, -Zhml[2].imag)
+
         else:
             Exception("Not implemented!! choose either bode or complex")               
 
@@ -329,6 +394,14 @@ class Main(QMainWindow, Ui_MainWindow):
         ZarcFitWindow.axColeRB.draw_artist(ZarcFitWindow.axColeRB.spines['right'])
         ZarcFitWindow.axColeRB.draw_artist(ZarcFitWindow.axColeRB.spines['bottom'])
         ZarcFitWindow.axColeRB.draw_artist(ZarcFitWindow.axColeRB.spines['top'])        
+
+        ZarcFitWindow.axColeRT.draw_artist(ZarcFitWindow.lineColeRTFh)
+        ZarcFitWindow.axColeRT.draw_artist(ZarcFitWindow.lineColeRTFm)
+        ZarcFitWindow.axColeRT.draw_artist(ZarcFitWindow.lineColeRTFl)
+        ZarcFitWindow.axColeRB.draw_artist(ZarcFitWindow.lineColeRBFh)
+        ZarcFitWindow.axColeRB.draw_artist(ZarcFitWindow.lineColeRBFm)
+        ZarcFitWindow.axColeRB.draw_artist(ZarcFitWindow.lineColeRBFl)
+
         ZarcFitWindow.figCole.canvas.update()
         
 

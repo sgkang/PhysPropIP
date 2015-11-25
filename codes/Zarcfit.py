@@ -113,7 +113,7 @@ class Zarcfit(object):
 		self.Zh = Zarcfun(self.Rh, self.Qh, self.Ph, frequency)
 		self.Zm = Zarcfun(self.Rm, self.Qm, self.Pm, frequency)
 		self.Zl = Zarcfun(self.Rl, self.Ql, self.Pl, frequency)
-		self.Ze = self.ZarcElecfun(self.frequency)
+		self.Ze = self.ZarcElecfun(frequency)
 		self.predSeries = self.Zinf + self.Zh + self.Zm + self.Zl + self.Ze
 		return self.predSeries
 
@@ -127,9 +127,10 @@ class Zarcfit(object):
 		self.pZh = RplusCPEfun(self.pRh, self.pQh, self.Ph, frequency)
 		self.pZm = RplusCPEfun(self.pRm, self.pQm, self.Pm, frequency)
 		self.pZl = RplusCPEfun(self.pRl, self.pQl, self.Pl, frequency)
-		self.Ze = self.ZarcElecfun(self.frequency)
+		self.Ze = self.ZarcElecfun(frequency)
 		self.predParallel = 1j*2*np.pi*self.Linf + 1./(1./self.R0 + 1./self.pZh + 1./self.pZm + 1./self.pZl) + self.Ze
 		return  self.predParallel
+
 
 	# def CalculateImpedance(self, frequency, Rinf, Rh, Qh, Ph, Rl, Ql, Pl, Re, Qe, Pef, Pei):
 	# 	Zh = Zarc(Rh, Qh, Ph, frequency)
