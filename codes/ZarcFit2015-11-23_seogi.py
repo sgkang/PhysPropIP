@@ -434,7 +434,7 @@ class Main(QMainWindow, Ui_MainWindow):
         ZarcFitWindow.frequency = ZarcFitWindow.obsdata[value][:,0]
         ZarcFitWindow.zarc.frequency = ZarcFitWindow.frequency
         ZarcFitWindow.updateFigs()               
-        ZarcFitWindow.lineEditOBSFNAME.setText(ZarcFitWindow.obsfname[value]) 
+        ZarcFitWindow.lineEditObsFName.setText(ZarcFitWindow.obsfname[value]) 
         print (value, ZarcFitWindow.obsfname[value], ZarcFitWindow.lineEditPRMFNAME.text())
 
     def SelectParameterFile(ZarcFitWindow):
