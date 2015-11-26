@@ -463,12 +463,10 @@ class Main(QMainWindow, Ui_MainWindow):
         print ("SelectObsFileType")
 
     def NextObsFile(ZarcFitWindow):
-        print ("NextObsFile", ZarcFitWindow.spinBoxObsFileNumber.value)
-        ZarcFitWindow.spinBoxObsFileNumber.setValue(ZarcFitWindow.spinBoxObsFileNumber.value + 1)
-
+        ZarcFitWindow.spinBoxObsFileNumber.setValue(ZarcFitWindow.spinBoxObsFileNumber.value() + 1)
 
     def PrevObsFile(ZarcFitWindow):
-        print ("PrevObsFile")
+        ZarcFitWindow.spinBoxObsFileNumber.setValue(ZarcFitWindow.spinBoxObsFileNumber.value() - 1)
 
     # # # Fits # # #
     def updateHighFreq(ZarcFitWindow, value):
