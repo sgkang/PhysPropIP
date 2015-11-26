@@ -63,6 +63,7 @@ class PathPicker(QtGui.QWidget):
             self.lbl.setText('No path selected')
 
 
+
 class Main(QMainWindow, Ui_MainWindow):
     
     fwdtype = "series"
@@ -134,6 +135,8 @@ class Main(QMainWindow, Ui_MainWindow):
         ZarcFitWindow.spinBoxLowFreq.setValue(frequencyN-1)
         ZarcFitWindow.labelLowFreq.setText("{:,}".format(frequencyAll[frequencyN-1])+" Hz")
         ZarcFitWindow.initializeFigure()
+
+
 
 
     
@@ -292,7 +295,6 @@ class Main(QMainWindow, Ui_MainWindow):
         ZarcFitWindow.lineColeRTobs = lineColeRTobs
         ZarcFitWindow.lineColeRBobs = lineColeRBobs  
 
-              
     def addmplCole(ZarcFitWindow):
         ZarcFitWindow.canvas = FigureCanvas(ZarcFitWindow.figCole)
         ZarcFitWindow.mplCole.addWidget(ZarcFitWindow.canvas)
@@ -612,10 +614,12 @@ class Main(QMainWindow, Ui_MainWindow):
         ZarcFitWindow.SldOutPei.setText("{:.2E}".format(Pei))
         ZarcFitWindow.zarc.Pei = Pei
         ZarcFitWindow.updateFigs() 
+
         
 
 ############################################################################### 
 ############################################################################### 
+from whichsystem import whichsystem
 if __name__ == '__main__':
     Rinf = 1.E4
     Rh = 1.E5
@@ -631,11 +635,13 @@ if __name__ == '__main__':
     Qe = 1.E-4
     Pef = 0.5
     Pei = 0.05    
-
-    scriptPath = os.getcwd()
-    with open(scriptPath+"\ZarcFit.ini", "r") as ini_file:
+    mysys = whichsystem()
+    mysys.run()
+    scriptPath = os.getcwd()    
+    with open(scriptPath+mysys.filesep+"ZarcFit.ini", "r") as ini_file:        
         path = ini_file.read()
     print(path)
+    
     # ZarcFitWindow.PathPickerWindow.fnamestr = path
     # ZarcFitWindow.lineEditPath.setText(path)
     # ZarcFitWindow.getObsFName()   
