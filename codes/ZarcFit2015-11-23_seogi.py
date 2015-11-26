@@ -57,7 +57,7 @@ class PathPicker(QtGui.QWidget):
             self.lbl.setText(fname)
             self.ZarcFitWindow.lineEditPath.setText(fname)
             self.ZarcFitWindow.getObsFName()
-            with open(scriptPath+"\ZarcFit.ini", "w") as ini_file:
+            with open(scriptPath+mysys.filesep+"ZarcFit.ini", "w") as ini_file:
                 print(fname, file=ini_file)
         else:
             self.lbl.setText('No path selected')
@@ -463,7 +463,9 @@ class Main(QMainWindow, Ui_MainWindow):
         print ("SelectObsFileType")
 
     def NextObsFile(ZarcFitWindow):
-        print ("NextObsFile")
+        print ("NextObsFile", ZarcFitWindow.spinBoxObsFileNumber.value)
+        ZarcFitWindow.spinBoxObsFileNumber.setValue(ZarcFitWindow.spinBoxObsFileNumber.value + 1)
+
 
     def PrevObsFile(ZarcFitWindow):
         print ("PrevObsFile")
