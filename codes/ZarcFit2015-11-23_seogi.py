@@ -446,6 +446,8 @@ class Main(QMainWindow, Ui_MainWindow):
             ZarcFitWindow.ObsFNamedirsize = len(ZarcFitWindow.ObsFName)
             # Set maximum filenumber in ui 
             ZarcFitWindow.horizontalSliderObsFileNumber.setMaximum(ZarcFitWindow.ObsFNamedirsize-1)
+            ZarcFitWindow.spinBoxObsFileNumber.setMaximum(ZarcFitWindow.ObsFNamedirsize-1)
+            ZarcFitWindow.label_LastFile.setText(str(ZarcFitWindow.ObsFNamedirsize-1))
 
 
     def ReadObsFile(ZarcFitWindow, value):
