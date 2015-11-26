@@ -1468,7 +1468,7 @@
            <enum>QSlider::TicksAbove</enum>
           </property>
           <property name="tickInterval">
-           <number>200</number>
+           <number>500</number>
           </property>
          </widget>
         </item>
@@ -1904,7 +1904,7 @@
     </hint>
     <hint type="destinationlabel">
      <x>525</x>
-     <y>100</y>
+     <y>97</y>
     </hint>
    </hints>
   </connection>
@@ -1916,7 +1916,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>525</x>
-     <y>100</y>
+     <y>97</y>
     </hint>
     <hint type="destinationlabel">
      <x>289</x>

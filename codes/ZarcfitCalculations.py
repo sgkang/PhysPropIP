@@ -128,7 +128,7 @@ class ZarcfitCalculations(object):
 		self.pZm = RplusCPEfun(self.pRm, self.pQm, self.Pm, frequency)
 		self.pZl = RplusCPEfun(self.pRl, self.pQl, self.Pl, frequency)
 		self.Ze = self.ZarcElecfun(frequency)
-		self.predParallel = 1j*2*np.pi*self.Linf + 1./(1./self.R0 + 1./self.pZh + 1./self.pZm + 1./self.pZl) + self.Ze
+		self.predParallel = 1j*2*np.pi*self.Linf*frequency + 1./(1./self.R0 + 1./self.pZh + 1./self.pZm + 1./self.pZl) + self.Ze
 		return  self.predParallel
 
 
