@@ -1,5 +1,5 @@
 import numpy as np
-import sys, glob, os
+import sys, glob, os, time
 from PyQt4 import QtGui, QtCore
 from PyQt4.uic import loadUiType
 import matplotlib
@@ -13,7 +13,7 @@ from matplotlib.backends.backend_qt4agg import (
 from ZarcfitCalculations import *
 matplotlib.rcParams['axes.facecolor']="white"    
 Ui_MainWindow, QMainWindow = loadUiType('ZarcFit2015-11-23.ui')  
-import time 
+
 
 class PathPicker(QtGui.QWidget):
 
@@ -155,7 +155,7 @@ class Main(QMainWindow, Ui_MainWindow):
                         
     #### Matplotlib window ####
     def initializeFigure(ZarcFitWindow):
-
+        ZarcFitWindow.t0 = time.time()
         hmlFreq = np.array([ZarcFitWindow.zarc.Fh,
                             ZarcFitWindow.zarc.Fm,
                             ZarcFitWindow.zarc.Fl,])
@@ -315,125 +315,129 @@ class Main(QMainWindow, Ui_MainWindow):
         ZarcFitWindow.addToolBar(ZarcFitWindow.toolbar)   
         
     def updateFigs(ZarcFitWindow):   
+        ZarcFitWindow.t1 = time.time()
+        elapsedTime = ZarcFitWindow.t1-ZarcFitWindow.t0
+        if elapsedTime > 0.1:
+            ZarcFitWindow.t0 = ZarcFitWindow.t1
         
-        hmlFreq = np.array([ZarcFitWindow.zarc.Fh,
-                            ZarcFitWindow.zarc.Fm,
-                            ZarcFitWindow.zarc.Fl,])
+            hmlFreq = np.array([ZarcFitWindow.zarc.Fh,
+                                ZarcFitWindow.zarc.Fm,
+                                ZarcFitWindow.zarc.Fl,])
 
-        ZarcFitWindow.figCole.canvas.restore_region(ZarcFitWindow.figColebackground)         
-        if ZarcFitWindow.radioButtonSerial.isChecked():
-            Z = ZarcFitWindow.zarc.Zseries(ZarcFitWindow.frequency)  
-            Zhml = ZarcFitWindow.zarc.Zseries(hmlFreq) 
-        elif ZarcFitWindow.radioButtonParallel.isChecked():
-            Z = ZarcFitWindow.zarc.Zparallel(ZarcFitWindow.frequency)  
-            Zhml = ZarcFitWindow.zarc.Zparallel(hmlFreq) 
-        else:
-            Exception("Not implemented!! choose either series or parallel")
-        vminR, vmaxR = (np.r_[Z.real, ZarcFitWindow.obs.real]).min(), (np.r_[Z.real, ZarcFitWindow.obs.real]).max()
-        vminI, vmaxI = (np.r_[-Z.imag, -ZarcFitWindow.obs.imag]).min(),(np.r_[-Z.imag, -ZarcFitWindow.obs.imag]).max() 
-        
-        ZarcFitWindow.lineCole.set_data(Z.real, -Z.imag)
-        ZarcFitWindow.lineCole.axes.set_xlim(0., vmaxR*1.2)
-        ZarcFitWindow.lineCole.axes.set_ylim(vminI, vmaxI*1.2)
+            ZarcFitWindow.figCole.canvas.restore_region(ZarcFitWindow.figColebackground)         
+            if ZarcFitWindow.radioButtonSerial.isChecked():
+                Z = ZarcFitWindow.zarc.Zseries(ZarcFitWindow.frequency)  
+                Zhml = ZarcFitWindow.zarc.Zseries(hmlFreq) 
+            elif ZarcFitWindow.radioButtonParallel.isChecked():
+                Z = ZarcFitWindow.zarc.Zparallel(ZarcFitWindow.frequency)  
+                Zhml = ZarcFitWindow.zarc.Zparallel(hmlFreq) 
+            else:
+                Exception("Not implemented!! choose either series or parallel")
+            vminR, vmaxR = (np.r_[Z.real, ZarcFitWindow.obs.real]).min(), (np.r_[Z.real, ZarcFitWindow.obs.real]).max()
+            vminI, vmaxI = (np.r_[-Z.imag, -ZarcFitWindow.obs.imag]).min(),(np.r_[-Z.imag, -ZarcFitWindow.obs.imag]).max() 
+            
+            ZarcFitWindow.lineCole.set_data(Z.real, -Z.imag)
+            ZarcFitWindow.lineCole.axes.set_xlim(0., vmaxR*1.2)
+            ZarcFitWindow.lineCole.axes.set_ylim(vminI, vmaxI*1.2)
 
-        ZarcFitWindow.lineColeFh.set_data(Zhml[0].real, -Zhml[0].imag)
-        ZarcFitWindow.lineColeFm.set_data(Zhml[1].real, -Zhml[1].imag)
-        ZarcFitWindow.lineColeFl.set_data(Zhml[2].real, -Zhml[2].imag)
+            ZarcFitWindow.lineColeFh.set_data(Zhml[0].real, -Zhml[0].imag)
+            ZarcFitWindow.lineColeFm.set_data(Zhml[1].real, -Zhml[1].imag)
+            ZarcFitWindow.lineColeFl.set_data(Zhml[2].real, -Zhml[2].imag)
 
-        ZarcFitWindow.lineColeobs.set_data(ZarcFitWindow.obs.real, -ZarcFitWindow.obs.imag)
-        ZarcFitWindow.figCole.draw_artist(ZarcFitWindow.figCole.patch)                
-        ZarcFitWindow.axCole.draw_artist(ZarcFitWindow.axCole.patch)        
-        ZarcFitWindow.axCole.draw_artist(ZarcFitWindow.axCole.get_yaxis())
-        ZarcFitWindow.axCole.draw_artist(ZarcFitWindow.axCole.get_xaxis())
-        ZarcFitWindow.axCole.draw_artist(ZarcFitWindow.lineColeFh)
-        ZarcFitWindow.axCole.draw_artist(ZarcFitWindow.lineColeFm)
-        ZarcFitWindow.axCole.draw_artist(ZarcFitWindow.lineColeFl)
-        ZarcFitWindow.axCole.draw_artist(ZarcFitWindow.lineCole)
-        ZarcFitWindow.axCole.draw_artist(ZarcFitWindow.lineColeobs)
+            ZarcFitWindow.lineColeobs.set_data(ZarcFitWindow.obs.real, -ZarcFitWindow.obs.imag)
+            ZarcFitWindow.figCole.draw_artist(ZarcFitWindow.figCole.patch)                
+            ZarcFitWindow.axCole.draw_artist(ZarcFitWindow.axCole.patch)        
+            ZarcFitWindow.axCole.draw_artist(ZarcFitWindow.axCole.get_yaxis())
+            ZarcFitWindow.axCole.draw_artist(ZarcFitWindow.axCole.get_xaxis())
+            ZarcFitWindow.axCole.draw_artist(ZarcFitWindow.lineColeFh)
+            ZarcFitWindow.axCole.draw_artist(ZarcFitWindow.lineColeFm)
+            ZarcFitWindow.axCole.draw_artist(ZarcFitWindow.lineColeFl)
+            ZarcFitWindow.axCole.draw_artist(ZarcFitWindow.lineCole)
+            ZarcFitWindow.axCole.draw_artist(ZarcFitWindow.lineColeobs)
 
-        ZarcFitWindow.axCole.draw_artist(ZarcFitWindow.axCole.spines['left'])
-        ZarcFitWindow.axCole.draw_artist(ZarcFitWindow.axCole.spines['right'])
-        ZarcFitWindow.axCole.draw_artist(ZarcFitWindow.axCole.spines['bottom'])
-        ZarcFitWindow.axCole.draw_artist(ZarcFitWindow.axCole.spines['top'])
-
-
-        if ZarcFitWindow.radioButtonBodePlots.isChecked():
-
-            zpredabs = abs(Z)
-            zobsabs = abs(ZarcFitWindow.obs)
-            ZarcFitWindow.lineColeRTpred.set_data(ZarcFitWindow.frequency, zpredabs)
-            ZarcFitWindow.lineColeRTobs.set_data(ZarcFitWindow.frequency,zobsabs)
-            zpredphase = abs(np.angle(Z, deg=True))
-            zobsphase = abs(np.angle(ZarcFitWindow.obs, deg=True))
-            ZarcFitWindow.lineColeRBpred.set_data(ZarcFitWindow.frequency, zpredphase)
-            ZarcFitWindow.lineColeRBobs.set_data(ZarcFitWindow.frequency, zobsphase)            
-            vminAbs, vmaxAbs = (np.r_[zpredabs, zobsabs]).min(), (np.r_[zpredabs, zobsabs]).max()
-            vminPhase, vmaxPhase = (np.r_[zpredphase, zobsphase]).min(), (np.r_[zpredphase, zobsphase]).max()
-            ZarcFitWindow.lineColeRTpred.axes.set_ylim(vminAbs*0.8, vmaxAbs*1.2)
-            ZarcFitWindow.lineColeRBpred.axes.set_ylim(vminPhase*0.8, vmaxPhase*1.2)        
-            ZarcFitWindow.lineColeRTpred.axes.set_ylabel("Total Impedance [Ohm]")
-            ZarcFitWindow.lineColeRBpred.axes.set_ylabel("abs(Phase) [deg]")     
-
-            ZarcFitWindow.lineColeRTFh.set_data(ZarcFitWindow.zarc.Fh, abs(Zhml[0]))
-            ZarcFitWindow.lineColeRTFm.set_data(ZarcFitWindow.zarc.Fm, abs(Zhml[1]))
-            ZarcFitWindow.lineColeRTFl.set_data(ZarcFitWindow.zarc.Fl, abs(Zhml[2]))
-            ZarcFitWindow.lineColeRBFh.set_data(ZarcFitWindow.zarc.Fh, abs(np.angle(Zhml[0], deg=True) ))
-            ZarcFitWindow.lineColeRBFm.set_data(ZarcFitWindow.zarc.Fm, abs(np.angle(Zhml[1], deg=True) ))
-            ZarcFitWindow.lineColeRBFl.set_data(ZarcFitWindow.zarc.Fl, abs(np.angle(Zhml[2], deg=True) ))            
-
-        elif ZarcFitWindow.radioButtonComplexPlots.isChecked():
-
-            zpredreal = Z.real
-            zobsreal = ZarcFitWindow.obs.real
-            ZarcFitWindow.lineColeRTpred.set_data(ZarcFitWindow.frequency, zpredreal)
-            ZarcFitWindow.lineColeRTobs.set_data(ZarcFitWindow.frequency,zobsreal)
-            zpredimag = -Z.imag
-            zobsimag = -ZarcFitWindow.obs.imag
-            ZarcFitWindow.lineColeRBpred.set_data(ZarcFitWindow.frequency, zpredimag)
-            ZarcFitWindow.lineColeRBobs.set_data(ZarcFitWindow.frequency, zobsimag)            
-            ZarcFitWindow.lineColeRTpred.axes.set_ylim(vminR*0.8, vmaxR*1.2)
-            ZarcFitWindow.lineColeRBpred.axes.set_ylim(vminI*0.8, vmaxI*11.2)   
-            ZarcFitWindow.lineColeRTpred.axes.set_ylabel("Real [Ohm]")
-            ZarcFitWindow.lineColeRBpred.axes.set_ylabel("abs(Imag) [Ohm]")    
-
-            ZarcFitWindow.lineColeRTFh.set_data(ZarcFitWindow.zarc.Fh, Zhml[0].real)
-            ZarcFitWindow.lineColeRTFm.set_data(ZarcFitWindow.zarc.Fm, Zhml[1].real)
-            ZarcFitWindow.lineColeRTFl.set_data(ZarcFitWindow.zarc.Fl, Zhml[2].real)
-            ZarcFitWindow.lineColeRBFh.set_data(ZarcFitWindow.zarc.Fh, abs(Zhml[0].imag))
-            ZarcFitWindow.lineColeRBFm.set_data(ZarcFitWindow.zarc.Fm, abs(Zhml[1].imag))
-            ZarcFitWindow.lineColeRBFl.set_data(ZarcFitWindow.zarc.Fl, abs(Zhml[2].imag))
-
-        else:
-            Exception("Not implemented!! choose either bode or complex")               
+            ZarcFitWindow.axCole.draw_artist(ZarcFitWindow.axCole.spines['left'])
+            ZarcFitWindow.axCole.draw_artist(ZarcFitWindow.axCole.spines['right'])
+            ZarcFitWindow.axCole.draw_artist(ZarcFitWindow.axCole.spines['bottom'])
+            ZarcFitWindow.axCole.draw_artist(ZarcFitWindow.axCole.spines['top'])
 
 
-        ZarcFitWindow.axColeRT.draw_artist(ZarcFitWindow.axColeRT.patch)
-        ZarcFitWindow.axColeRT.draw_artist(ZarcFitWindow.axColeRT.get_yaxis())
-        ZarcFitWindow.axColeRT.draw_artist(ZarcFitWindow.axColeRT.get_xaxis())
-        ZarcFitWindow.axColeRT.draw_artist(ZarcFitWindow.axColeRT.spines['left'])
-        ZarcFitWindow.axColeRT.draw_artist(ZarcFitWindow.axColeRT.spines['right'])
-        ZarcFitWindow.axColeRT.draw_artist(ZarcFitWindow.axColeRT.spines['bottom'])
-        ZarcFitWindow.axColeRT.draw_artist(ZarcFitWindow.axColeRT.spines['top'])
-        ZarcFitWindow.axColeRT.draw_artist(ZarcFitWindow.lineColeRTFh)
-        ZarcFitWindow.axColeRT.draw_artist(ZarcFitWindow.lineColeRTFm)       
-        ZarcFitWindow.axColeRT.draw_artist(ZarcFitWindow.lineColeRTFl)
-        ZarcFitWindow.axColeRT.draw_artist(ZarcFitWindow.lineColeRTpred)
-        ZarcFitWindow.axColeRT.draw_artist(ZarcFitWindow.lineColeRTobs)        
-       
-        ZarcFitWindow.axColeRB.draw_artist(ZarcFitWindow.axColeRB.patch)
-        ZarcFitWindow.axColeRB.draw_artist(ZarcFitWindow.axColeRB.get_yaxis())
-        ZarcFitWindow.axColeRB.draw_artist(ZarcFitWindow.axColeRB.get_xaxis())
-        ZarcFitWindow.axColeRB.draw_artist(ZarcFitWindow.axColeRB.spines['left'])
-        ZarcFitWindow.axColeRB.draw_artist(ZarcFitWindow.axColeRB.spines['right'])
-        ZarcFitWindow.axColeRB.draw_artist(ZarcFitWindow.axColeRB.spines['bottom'])
-        ZarcFitWindow.axColeRB.draw_artist(ZarcFitWindow.axColeRB.spines['top'])        
-        ZarcFitWindow.axColeRB.draw_artist(ZarcFitWindow.lineColeRBFh)
-        ZarcFitWindow.axColeRB.draw_artist(ZarcFitWindow.lineColeRBFm)
-        ZarcFitWindow.axColeRB.draw_artist(ZarcFitWindow.lineColeRBFl)
-        ZarcFitWindow.axColeRB.draw_artist(ZarcFitWindow.lineColeRBpred)        
-        ZarcFitWindow.axColeRB.draw_artist(ZarcFitWindow.lineColeRBobs)   
+            if ZarcFitWindow.radioButtonBodePlots.isChecked():
 
-        ZarcFitWindow.figCole.canvas.update()
+                zpredabs = abs(Z)
+                zobsabs = abs(ZarcFitWindow.obs)
+                ZarcFitWindow.lineColeRTpred.set_data(ZarcFitWindow.frequency, zpredabs)
+                ZarcFitWindow.lineColeRTobs.set_data(ZarcFitWindow.frequency,zobsabs)
+                zpredphase = abs(np.angle(Z, deg=True))
+                zobsphase = abs(np.angle(ZarcFitWindow.obs, deg=True))
+                ZarcFitWindow.lineColeRBpred.set_data(ZarcFitWindow.frequency, zpredphase)
+                ZarcFitWindow.lineColeRBobs.set_data(ZarcFitWindow.frequency, zobsphase)            
+                vminAbs, vmaxAbs = (np.r_[zpredabs, zobsabs]).min(), (np.r_[zpredabs, zobsabs]).max()
+                vminPhase, vmaxPhase = (np.r_[zpredphase, zobsphase]).min(), (np.r_[zpredphase, zobsphase]).max()
+                ZarcFitWindow.lineColeRTpred.axes.set_ylim(vminAbs*0.8, vmaxAbs*1.2)
+                ZarcFitWindow.lineColeRBpred.axes.set_ylim(vminPhase*0.8, vmaxPhase*1.2)        
+                ZarcFitWindow.lineColeRTpred.axes.set_ylabel("Total Impedance [Ohm]")
+                ZarcFitWindow.lineColeRBpred.axes.set_ylabel("abs(Phase) [deg]")     
+
+                ZarcFitWindow.lineColeRTFh.set_data(ZarcFitWindow.zarc.Fh, abs(Zhml[0]))
+                ZarcFitWindow.lineColeRTFm.set_data(ZarcFitWindow.zarc.Fm, abs(Zhml[1]))
+                ZarcFitWindow.lineColeRTFl.set_data(ZarcFitWindow.zarc.Fl, abs(Zhml[2]))
+                ZarcFitWindow.lineColeRBFh.set_data(ZarcFitWindow.zarc.Fh, abs(np.angle(Zhml[0], deg=True) ))
+                ZarcFitWindow.lineColeRBFm.set_data(ZarcFitWindow.zarc.Fm, abs(np.angle(Zhml[1], deg=True) ))
+                ZarcFitWindow.lineColeRBFl.set_data(ZarcFitWindow.zarc.Fl, abs(np.angle(Zhml[2], deg=True) ))            
+
+            elif ZarcFitWindow.radioButtonComplexPlots.isChecked():
+
+                zpredreal = Z.real
+                zobsreal = ZarcFitWindow.obs.real
+                ZarcFitWindow.lineColeRTpred.set_data(ZarcFitWindow.frequency, zpredreal)
+                ZarcFitWindow.lineColeRTobs.set_data(ZarcFitWindow.frequency,zobsreal)
+                zpredimag = -Z.imag
+                zobsimag = -ZarcFitWindow.obs.imag
+                ZarcFitWindow.lineColeRBpred.set_data(ZarcFitWindow.frequency, zpredimag)
+                ZarcFitWindow.lineColeRBobs.set_data(ZarcFitWindow.frequency, zobsimag)            
+                ZarcFitWindow.lineColeRTpred.axes.set_ylim(vminR*0.8, vmaxR*1.2)
+                ZarcFitWindow.lineColeRBpred.axes.set_ylim(vminI*0.8, vmaxI*11.2)   
+                ZarcFitWindow.lineColeRTpred.axes.set_ylabel("Real [Ohm]")
+                ZarcFitWindow.lineColeRBpred.axes.set_ylabel("abs(Imag) [Ohm]")    
+
+                ZarcFitWindow.lineColeRTFh.set_data(ZarcFitWindow.zarc.Fh, Zhml[0].real)
+                ZarcFitWindow.lineColeRTFm.set_data(ZarcFitWindow.zarc.Fm, Zhml[1].real)
+                ZarcFitWindow.lineColeRTFl.set_data(ZarcFitWindow.zarc.Fl, Zhml[2].real)
+                ZarcFitWindow.lineColeRBFh.set_data(ZarcFitWindow.zarc.Fh, abs(Zhml[0].imag))
+                ZarcFitWindow.lineColeRBFm.set_data(ZarcFitWindow.zarc.Fm, abs(Zhml[1].imag))
+                ZarcFitWindow.lineColeRBFl.set_data(ZarcFitWindow.zarc.Fl, abs(Zhml[2].imag))
+
+            else:
+                Exception("Not implemented!! choose either bode or complex")               
+
+
+            ZarcFitWindow.axColeRT.draw_artist(ZarcFitWindow.axColeRT.patch)
+            ZarcFitWindow.axColeRT.draw_artist(ZarcFitWindow.axColeRT.get_yaxis())
+            ZarcFitWindow.axColeRT.draw_artist(ZarcFitWindow.axColeRT.get_xaxis())
+            ZarcFitWindow.axColeRT.draw_artist(ZarcFitWindow.axColeRT.spines['left'])
+            ZarcFitWindow.axColeRT.draw_artist(ZarcFitWindow.axColeRT.spines['right'])
+            ZarcFitWindow.axColeRT.draw_artist(ZarcFitWindow.axColeRT.spines['bottom'])
+            ZarcFitWindow.axColeRT.draw_artist(ZarcFitWindow.axColeRT.spines['top'])
+            ZarcFitWindow.axColeRT.draw_artist(ZarcFitWindow.lineColeRTFh)
+            ZarcFitWindow.axColeRT.draw_artist(ZarcFitWindow.lineColeRTFm)       
+            ZarcFitWindow.axColeRT.draw_artist(ZarcFitWindow.lineColeRTFl)
+            ZarcFitWindow.axColeRT.draw_artist(ZarcFitWindow.lineColeRTpred)
+            ZarcFitWindow.axColeRT.draw_artist(ZarcFitWindow.lineColeRTobs)        
+           
+            ZarcFitWindow.axColeRB.draw_artist(ZarcFitWindow.axColeRB.patch)
+            ZarcFitWindow.axColeRB.draw_artist(ZarcFitWindow.axColeRB.get_yaxis())
+            ZarcFitWindow.axColeRB.draw_artist(ZarcFitWindow.axColeRB.get_xaxis())
+            ZarcFitWindow.axColeRB.draw_artist(ZarcFitWindow.axColeRB.spines['left'])
+            ZarcFitWindow.axColeRB.draw_artist(ZarcFitWindow.axColeRB.spines['right'])
+            ZarcFitWindow.axColeRB.draw_artist(ZarcFitWindow.axColeRB.spines['bottom'])
+            ZarcFitWindow.axColeRB.draw_artist(ZarcFitWindow.axColeRB.spines['top'])        
+            ZarcFitWindow.axColeRB.draw_artist(ZarcFitWindow.lineColeRBFh)
+            ZarcFitWindow.axColeRB.draw_artist(ZarcFitWindow.lineColeRBFm)
+            ZarcFitWindow.axColeRB.draw_artist(ZarcFitWindow.lineColeRBFl)
+            ZarcFitWindow.axColeRB.draw_artist(ZarcFitWindow.lineColeRBpred)        
+            ZarcFitWindow.axColeRB.draw_artist(ZarcFitWindow.lineColeRBobs)   
+
+            ZarcFitWindow.figCole.canvas.update()
         
 
     #### Menus and Buttons ####
@@ -502,7 +506,25 @@ class Main(QMainWindow, Ui_MainWindow):
         print ("ReadParameters")
         
     def DefaultStartModel(ZarcFitWindow):
-        ZarcFitWindow.zarc.Linf, ZarcFitWindow.zarc.Rinf, ZarcFitWindow.zarc.Rh, ZarcFitWindow.zarc.Fh, ZarcFitWindow.zarc.Ph, ZarcFitWindow.zarc.Rl, ZarcFitWindow.zarc.Fl, ZarcFitWindow.zarc.Pl, ZarcFitWindow.zarc.Rm, ZarcFitWindow.zarc.Fm, ZarcFitWindow.zarc.Pm, ZarcFitWindow.zarc.Re, ZarcFitWindow.zarc.Qe, ZarcFitWindow.zarc.Pef, ZarcFitWindow.zarc.Pei = SetDefaultParameters()
+        ZarcFitWindow.zarc.Linf, ZarcFitWindow.zarc.Rinf, ZarcFitWindow.zarc.Rh, ZarcFitWindow.zarc.Fh, \
+            ZarcFitWindow.zarc.Ph, ZarcFitWindow.zarc.Rl, ZarcFitWindow.zarc.Fl, ZarcFitWindow.zarc.Pl, \
+            ZarcFitWindow.zarc.Rm, ZarcFitWindow.zarc.Fm, ZarcFitWindow.zarc.Pm, ZarcFitWindow.zarc.Re, \
+            ZarcFitWindow.zarc.Qe, ZarcFitWindow.zarc.Pef, ZarcFitWindow.zarc.Pei = SetDefaultParameters()
+        ZarcFitWindow.SldOutLinf.setText("{:.2E}".format(ZarcFitWindow.zarc.Linf))
+        ZarcFitWindow.SldOutRinf.setText("{:.2E}".format(ZarcFitWindow.zarc.Rinf))
+        ZarcFitWindow.SldOutRh.setText("{:.2E}".format(ZarcFitWindow.zarc.Rh))
+        ZarcFitWindow.SldOutFh.setText("{:.2E}".format(ZarcFitWindow.zarc.Fh))
+        ZarcFitWindow.SldOutPh.setText("{:.3f}".format(ZarcFitWindow.zarc.Ph))
+        ZarcFitWindow.SldOutRm.setText("{:.2E}".format(ZarcFitWindow.zarc.Rm))
+        ZarcFitWindow.SldOutFm.setText("{:.2E}".format(ZarcFitWindow.zarc.Fm))
+        ZarcFitWindow.SldOutPm.setText("{:.3f}".format(ZarcFitWindow.zarc.Pm))
+        ZarcFitWindow.SldOutRl.setText("{:.2E}".format(ZarcFitWindow.zarc.Rl))
+        ZarcFitWindow.SldOutFl.setText("{:.2E}".format(ZarcFitWindow.zarc.Fl))
+        ZarcFitWindow.SldOutPl.setText("{:.3f}".format(ZarcFitWindow.zarc.Pl))
+        ZarcFitWindow.SldOutRe.setText("{:.2E}".format(ZarcFitWindow.zarc.Re))
+        ZarcFitWindow.SldOutQe.setText("{:.2E}".format(ZarcFitWindow.zarc.Qe))
+        ZarcFitWindow.SldOutPef.setText("{:.3f}".format(ZarcFitWindow.zarc.Pef))
+        ZarcFitWindow.SldOutPei.setText("{:.3f}".format(ZarcFitWindow.zarc.Pei))
         ZarcFitWindow.updateFigs()        
         print ("DefaultStartModel")
         
