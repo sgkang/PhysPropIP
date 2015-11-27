@@ -13,6 +13,7 @@ from matplotlib.backends.backend_qt4agg import (
 from ZarcfitCalculations import *
 matplotlib.rcParams['axes.facecolor']="white"    
 Ui_MainWindow, QMainWindow = loadUiType('ZarcFit2015-11-23.ui')  
+import time 
 
 class PathPicker(QtGui.QWidget):
 
@@ -133,9 +134,7 @@ class Main(QMainWindow, Ui_MainWindow):
         ZarcFitWindow.SliderPef.valueChanged.connect(ZarcFitWindow.updateSldOutPef)
         ZarcFitWindow.SldOutPef.textChanged.connect(ZarcFitWindow.updateSliderPef)
         ZarcFitWindow.SliderPei.valueChanged.connect(ZarcFitWindow.updateSldOutPei)
-        ZarcFitWindow.SldOutPei.textChanged.connect(ZarcFitWindow.updateSliderPei)
-        
-        
+        ZarcFitWindow.SldOutPei.textChanged.connect(ZarcFitWindow.updateSliderPei)                
 
         ZarcFitWindow.spinBoxHighFreq.valueChanged.connect(ZarcFitWindow.updateHighFreq)
         ZarcFitWindow.spinBoxLowFreq.valueChanged.connect(ZarcFitWindow.updateLowFreq)
@@ -152,9 +151,6 @@ class Main(QMainWindow, Ui_MainWindow):
         ZarcFitWindow.spinBoxLowFreq.setValue(frequencyN-1)
         ZarcFitWindow.labelLowFreq.setText("{:,}".format(frequencyAll[frequencyN-1])+" Hz")
         ZarcFitWindow.initializeFigure()
-
-
-
 
     
                         
@@ -548,7 +544,7 @@ class Main(QMainWindow, Ui_MainWindow):
         Linf = 10**(value/1000.)
         ZarcFitWindow.SldOutLinf.setText("{:.2E}".format(Linf))
         ZarcFitWindow.zarc.Linf = Linf
-        ZarcFitWindow.updateFigs() 
+        # ZarcFitWindow.updateFigs() 
         
     def updateSliderLinf(ZarcFitWindow, value):
         Linf = float(value)
@@ -560,19 +556,20 @@ class Main(QMainWindow, Ui_MainWindow):
         Rinf = 10**(value/1000.)
         ZarcFitWindow.SldOutRinf.setText("{:.2E}".format(Rinf))
         ZarcFitWindow.zarc.Rinf = Rinf
-        ZarcFitWindow.updateFigs() 
+        # ZarcFitWindow.updateFigs() 
 
     def updateSliderRinf(ZarcFitWindow, value):
         Rinf = float(value)
         ZarcFitWindow.SliderRinf.setValue(int(np.log10(Rinf)*1000.))
         ZarcFitWindow.zarc.Rinf = Rinf
         ZarcFitWindow.updateFigs() 
-        
+    
     def updateSldOutRh(ZarcFitWindow, value):
         Rh = 10**(value/1000.)
         ZarcFitWindow.SldOutRh.setText("{:.2E}".format(Rh))
         ZarcFitWindow.zarc.Rh = Rh
-        ZarcFitWindow.updateFigs()                 
+        # ZarcFitWindow.updateFigs()                 
+
 
     def updateSliderRh(ZarcFitWindow, value):
         Rh = float(value)
@@ -584,7 +581,7 @@ class Main(QMainWindow, Ui_MainWindow):
         Fh = 10**(value/1000.)
         ZarcFitWindow.SldOutFh.setText("{:.2E}".format(Fh))
         ZarcFitWindow.zarc.Fh = Fh
-        ZarcFitWindow.updateFigs() 
+        # ZarcFitWindow.updateFigs() 
 
     def updateSliderFh(ZarcFitWindow, value):
         Fh = float(value)
@@ -596,7 +593,7 @@ class Main(QMainWindow, Ui_MainWindow):
         Ph = value/1000.
         ZarcFitWindow.SldOutPh.setText("{:.3f}".format(Ph))
         ZarcFitWindow.zarc.Ph = Ph
-        ZarcFitWindow.updateFigs() 
+        # ZarcFitWindow.updateFigs() 
         
     def updateSliderPh(ZarcFitWindow, value):
         Ph = float(value)
@@ -608,7 +605,7 @@ class Main(QMainWindow, Ui_MainWindow):
         Rm = 10**(value/1000.)
         ZarcFitWindow.SldOutRm.setText("{:.2E}".format(Rm))
         ZarcFitWindow.zarc.Rm = Rm
-        ZarcFitWindow.updateFigs() 
+        # ZarcFitWindow.updateFigs() 
 
     def updateSliderRm(ZarcFitWindow, value):
         Rm = float(value)
@@ -620,7 +617,7 @@ class Main(QMainWindow, Ui_MainWindow):
         Fm = 10**(value/1000.)
         ZarcFitWindow.SldOutFm.setText("{:.2E}".format(Fm))
         ZarcFitWindow.zarc.Fm = Fm
-        ZarcFitWindow.updateFigs() 
+        # ZarcFitWindow.updateFigs() 
 
     def updateSliderFm(ZarcFitWindow, value):
         Fm = float(value)
@@ -632,7 +629,7 @@ class Main(QMainWindow, Ui_MainWindow):
         Pm = value/1000.
         ZarcFitWindow.SldOutPm.setText("{:.3f}".format(Pm))
         ZarcFitWindow.zarc.Pm = Pm
-        ZarcFitWindow.updateFigs() 
+        # ZarcFitWindow.updateFigs() 
         
     def updateSliderPm(ZarcFitWindow, value):
         Pm = float(value)
@@ -644,7 +641,7 @@ class Main(QMainWindow, Ui_MainWindow):
         Rl = 10**(value/1000.)
         ZarcFitWindow.SldOutRl.setText("{:.2E}".format(Rl))
         ZarcFitWindow.zarc.Rl = Rl
-        ZarcFitWindow.updateFigs() 
+        # ZarcFitWindow.updateFigs() 
 
     def updateSliderRl(ZarcFitWindow, value):
         Rl = float(value)
@@ -656,7 +653,7 @@ class Main(QMainWindow, Ui_MainWindow):
         Fl = 10**(value/1000.)
         ZarcFitWindow.SldOutFl.setText("{:.2E}".format(Fl))
         ZarcFitWindow.zarc.Fl = Fl
-        ZarcFitWindow.updateFigs() 
+        # ZarcFitWindow.updateFigs() 
         
     def updateSliderFl(ZarcFitWindow, value):
         Fl = float(value)
@@ -668,7 +665,7 @@ class Main(QMainWindow, Ui_MainWindow):
         Pl = value/1000.
         ZarcFitWindow.SldOutPl.setText("{:.3f}".format(Pl))
         ZarcFitWindow.zarc.Pl = Pl
-        ZarcFitWindow.updateFigs() 
+        # ZarcFitWindow.updateFigs() 
 
     def updateSliderPl(ZarcFitWindow, value):
         Pl = float(value)
@@ -680,19 +677,19 @@ class Main(QMainWindow, Ui_MainWindow):
         Re = 10**(value/1000.)
         ZarcFitWindow.SldOutRe.setText("{:.2E}".format(Re))
         ZarcFitWindow.zarc.Re = Re
-        ZarcFitWindow.updateFigs() 
+        # ZarcFitWindow.updateFigs() 
 
     def updateSliderRe(ZarcFitWindow, value):
         Re = float(value)
         ZarcFitWindow.SliderRe.setValue(int(np.log10(Re)*1000.))
         ZarcFitWindow.zarc.Re = Re
-        ZarcFitWindow.updateFigs() 
+        # ZarcFitWindow.updateFigs() 
         
     def updateSldOutQe(ZarcFitWindow, value):
         Qe = 10**(value/1000.)
         ZarcFitWindow.SldOutQe.setText("{:.2E}".format(Qe))
         ZarcFitWindow.zarc.Qe = Qe
-        ZarcFitWindow.updateFigs() 
+        # ZarcFitWindow.updateFigs() 
 
     def updateSliderQe(ZarcFitWindow, value):
         Qe = float(value)
@@ -704,7 +701,7 @@ class Main(QMainWindow, Ui_MainWindow):
         Pef = value/1000.
         ZarcFitWindow.SldOutPef.setText("{:.3f}".format(Pef))
         ZarcFitWindow.zarc.Pef = Pef
-        ZarcFitWindow.updateFigs() 
+        # ZarcFitWindow.updateFigs() 
 
     def updateSliderPef(ZarcFitWindow, value):
         Pef = float(value)
@@ -716,7 +713,7 @@ class Main(QMainWindow, Ui_MainWindow):
         Pei = value/1000.
         ZarcFitWindow.SldOutPei.setText("{:.3f}".format(Pei))
         ZarcFitWindow.zarc.Pei = Pei
-        ZarcFitWindow.updateFigs() 
+        # ZarcFitWindow.updateFigs() 
 
     def updateSliderPei(ZarcFitWindow, value):
         Pei = float(value)
