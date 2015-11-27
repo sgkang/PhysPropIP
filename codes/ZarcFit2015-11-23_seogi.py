@@ -151,7 +151,6 @@ class Main(QMainWindow, Ui_MainWindow):
         ZarcFitWindow.spinBoxLowFreq.setValue(frequencyN-1)
         ZarcFitWindow.labelLowFreq.setText("{:,}".format(frequencyAll[frequencyN-1])+" Hz")
         ZarcFitWindow.initializeFigure()
-
     
                         
     #### Matplotlib window ####
@@ -723,10 +722,8 @@ class Main(QMainWindow, Ui_MainWindow):
        
         
 
-############################################################################### 
-############################################################################### 
-from whichsystem import whichsystem
-if __name__ == '__main__':
+def SetDefaultParameters():
+    
     Linf = 1.E-4
     Rinf = 1.E4
     Rh = 1.E5
@@ -742,17 +739,23 @@ if __name__ == '__main__':
     Qe = 1.E-4
     Pef = 0.5
     Pei = 0.05    
+
+    return  Linf, Rinf, Rh, Fh, Ph, Rl, Fl, Pl, Rm, Fm, Pm, Re, Qe, Pef, Pei
+
+############################################################################### 
+############################################################################### 
+from whichsystem import whichsystem
+if __name__ == '__main__':
+
     mysys = whichsystem()
     mysys.run()
     scriptPath = os.getcwd()    
     with open(scriptPath+mysys.filesep+"ZarcFit.ini", "r") as ini_file:        
         path = ini_file.read()
-    print(path)
-    
+    print(path)    
     # ZarcFitWindow.PathPickerWindow.fnamestr = path
     # ZarcFitWindow.lineEditPath.setText(path)
-    # ZarcFitWindow.getObsFName()   
-    
+    # ZarcFitWindow.getObsFName()       
     path = "../data/HVC2014_10Grenon/"
     fnameobs = "BC13867-A 2014-10-23.z"
     pathobs = path+fnameobs
@@ -763,8 +766,9 @@ if __name__ == '__main__':
     print (frequencyN, frequencyAll[0],frequencyAll[frequencyN-1],)
     frequency = frequencyAll
     zarc = ZarcfitCalculations(obs, frequency)
-    zarc.SetParametersSeries(0., Rinf, Rh, Fh, Ph, Rl, Fl, Pl, Rm, Fm, Pm, Re, Qe, Pef, Pei)     
-    app = QtGui.QApplication(sys.argv)
+    Linf, Rinf, Rh, Fh, Ph, Rl, Fl, Pl, Rm, Fm, Pm, Re, Qe, Pef, Pei = SetDefaultParameters()
+    zarc.SetParametersSeries(Linf, Rinf, Rh, Fh, Ph, Rl, Fl, Pl, Rm, Fm, Pm, Re, Qe, Pef, Pei)     
+    app = QtGui.QApplication(sys.argv)`
     main = Main(zarc, obs, frequency)
     main.addmplCole()
     main.show()
