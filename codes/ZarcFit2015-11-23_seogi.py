@@ -502,6 +502,8 @@ class Main(QMainWindow, Ui_MainWindow):
         print ("ReadParameters")
         
     def DefaultStartModel(ZarcFitWindow):
+        ZarcFitWindow.zarc.Linf, ZarcFitWindow.zarc.Rinf, ZarcFitWindow.zarc.Rh, ZarcFitWindow.zarc.Fh, ZarcFitWindow.zarc.Ph, ZarcFitWindow.zarc.Rl, ZarcFitWindow.zarc.Fl, ZarcFitWindow.zarc.Pl, ZarcFitWindow.zarc.Rm, ZarcFitWindow.zarc.Fm, ZarcFitWindow.zarc.Pm, ZarcFitWindow.zarc.Re, ZarcFitWindow.zarc.Qe, ZarcFitWindow.zarc.Pef, ZarcFitWindow.zarc.Pei = SetDefaultParameters()
+        ZarcFitWindow.updateFigs()        
         print ("DefaultStartModel")
         
     def FitCole(ZarcFitWindow):
@@ -768,7 +770,7 @@ if __name__ == '__main__':
     zarc = ZarcfitCalculations(obs, frequency)
     Linf, Rinf, Rh, Fh, Ph, Rl, Fl, Pl, Rm, Fm, Pm, Re, Qe, Pef, Pei = SetDefaultParameters()
     zarc.SetParametersSeries(Linf, Rinf, Rh, Fh, Ph, Rl, Fl, Pl, Rm, Fm, Pm, Re, Qe, Pef, Pei)     
-    app = QtGui.QApplication(sys.argv)`
+    app = QtGui.QApplication(sys.argv)
     main = Main(zarc, obs, frequency)
     main.addmplCole()
     main.show()
