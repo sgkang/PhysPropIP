@@ -317,8 +317,9 @@ class Main(QMainWindow, Ui_MainWindow):
     def updateFigs(ZarcFitWindow):   
         ZarcFitWindow.t1 = time.time()
         elapsedTime = ZarcFitWindow.t1-ZarcFitWindow.t0
-        if elapsedTime > 0.1:
+        if elapsedTime > 0.1 or ZarcFitWindow.forcePlot:
             ZarcFitWindow.t0 = ZarcFitWindow.t1
+            ZarcFitWindow.forcePlot = False
         
             hmlFreq = np.array([ZarcFitWindow.zarc.Fh,
                                 ZarcFitWindow.zarc.Fm,
@@ -525,6 +526,7 @@ class Main(QMainWindow, Ui_MainWindow):
         ZarcFitWindow.SldOutQe.setText("{:.2E}".format(ZarcFitWindow.zarc.Qe))
         ZarcFitWindow.SldOutPef.setText("{:.3f}".format(ZarcFitWindow.zarc.Pef))
         ZarcFitWindow.SldOutPei.setText("{:.3f}".format(ZarcFitWindow.zarc.Pei))
+        ZarcFitWindow.forcePlot = True
         ZarcFitWindow.updateFigs()        
         print ("DefaultStartModel")
         
