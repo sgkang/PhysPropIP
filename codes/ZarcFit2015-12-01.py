@@ -494,7 +494,7 @@ class Main(QMainWindow, Ui_MainWindow):
 
     def ReadObsFile(ZarcFitWindow, value):
         ZarcFitWindow.obs = ZarcFitWindow.obsdata[value][:,4]+ZarcFitWindow.obsdata[value][:,5]*1j
-        ZarcFitWindow.obsorig = ZarcFitWindow.obsorig.copy()
+        ZarcFitWindow.obsorig = ZarcFitWindow.obs.copy()
         ZarcFitWindow.frequency = ZarcFitWindow.obsdata[value][:,0]
         ZarcFitWindow.frequencyorig = ZarcFitWindow.frequency.copy()
         ZarcFitWindow.nfreq = ZarcFitWindow.frequency.size
@@ -502,10 +502,11 @@ class Main(QMainWindow, Ui_MainWindow):
         ZarcFitWindow.labelHighFreq.setText("{:,}".format(ZarcFitWindow.frequencyorig[0])+" Hz")
         ZarcFitWindow.freqindlow = 0
         ZarcFitWindow.spinBoxLowFreq.setValue(ZarcFitWindow.nfreq-1)
+        ZarcFitWindow.spinBoxLowFreq.setMaximum(ZarcFitWindow.nfreq-1)
         ZarcFitWindow.labelLowFreq.setText("{:,}".format(ZarcFitWindow.frequencyorig[-1])+" Hz")
-        ZarcFitWindow.freqindhigh = ZarcFitWindow.nfreq                
+        ZarcFitWindow.freqindhigh = ZarcFitWindow.nfreq 
         ZarcFitWindow.updateFigs() 
-        print (ZarcFitWindow.nfreq, ZarcFitWindow.frequencyorig[0],ZarcFitWindow.frequencyorig[-1],)        
+        print (ZarcFitWindow.ObsFName[value], ZarcFitWindow.nfreq, ZarcFitWindow.frequencyorig[0],ZarcFitWindow.frequencyorig[-1],)
         ZarcFitWindow.lineEditObsFName.setText(ZarcFitWindow.ObsFName[value])         
 
     def SelectParameterFile(ZarcFitWindow):

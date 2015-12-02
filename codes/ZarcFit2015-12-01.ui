@@ -1863,7 +1863,7 @@
   </action>
   <action name="actionF1_Fit_Spectrum_Cartesian_Cole">
    <property name="text">
-    <string>F1 - Fit Spectrum Cartesian/Cole</string>
+    <string>Fit Spectrum Cartesian/Cole</string>
    </property>
    <property name="shortcut">
     <string>F1</string>
