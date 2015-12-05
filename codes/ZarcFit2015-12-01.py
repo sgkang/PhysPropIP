@@ -1,9 +1,16 @@
+#### ZarcFit.py #### for interactive model fitting of spectral electrical impedance observations.
+# Seogi Kang and Randy Enkin, developed starting November 2015.
+# Based on ZarcFit.vi, written in LabView by Randy Enkin, Geological Survey of Canada
+# Using Python version 3.4 and QT version 4.8   
+# 
+# requires files ZarcFit2015-12-01.ui, ZarcfitCalculations.py, whichsystem.py
+
+
 import numpy as np
 import sys, glob, os, time
 from PyQt4 import QtGui, QtCore
 from PyQt4.uic import loadUiType
 import matplotlib
-matplotlib.use('Qt4Agg')
 from matplotlib.figure import Figure
 import matplotlib.gridspec as gridspec
 import matplotlib.pyplot as plt
@@ -11,13 +18,16 @@ from matplotlib.backends.backend_qt4agg import (
     FigureCanvasQTAgg as FigureCanvas,
     NavigationToolbar2QT as NavigationToolbar)
 from ZarcfitCalculations import *
+from whichsystem import whichsystem
+
+matplotlib.use('Qt4Agg')
 matplotlib.rcParams['axes.facecolor']="white"    
 Ui_MainWindow, QMainWindow = loadUiType('ZarcFit2015-12-01.ui')  
 
 
 class PathPicker(QtGui.QWidget):
 
-    fnamestr = None
+    pathNameStr = None
 
     def __init__(self, ZarcFitWindow, parent=None):
         # create GUI
@@ -34,17 +44,17 @@ class PathPicker(QtGui.QWidget):
         # Create a push button labelled 'choose' and add it to our layout
         btn = QtGui.QPushButton('Choose path', self)
         self.vbox.addWidget(btn)        
-        # Connect the clicked signal to the get_fname handler
-        self.connect(btn, QtCore.SIGNAL('clicked()'), self.get_fname)
+        # Connect the clicked signal to the getPathName handler
+        self.connect(btn, QtCore.SIGNAL('clicked()'), self.getPathName)
         # Create a push button labelled 'Return' and add it to our layout
         btn1 = QtGui.QPushButton('Return to main window', self)
         self.vbox.addWidget(btn1)        
-        # Connect the clicked signal to the get_fname handler
+        # Connect the clicked signal to the getPathName handler
         self.connect(btn1, QtCore.SIGNAL('clicked()'), self.close)
         # Connect to ZarcFitWindow
         self.ZarcFitWindow = ZarcFitWindow
 
-    def get_fname(self):
+    def getPathName(self):
         """
         Handler called when 'choose path' is clicked
         """
@@ -52,10 +62,11 @@ class PathPicker(QtGui.QWidget):
         # and if the user selects a path, it's path is returned, and if not
         # (ie, the user cancels the operation) None is returned
         fname = QtGui.QFileDialog.getExistingDirectory(self, "Select Path")
-        self.fnamestr = str(fname)
+        self.pathNameStr = str(fname)
 
         if fname:
             self.lbl.setText(fname)
+            self.ZarcFitWindow.pathNameStr = fname
             self.ZarcFitWindow.lineEditPath.setText(fname)
             self.ZarcFitWindow.getObsFName()
             with open(scriptPath+mysys.filesep+"ZarcFit.ini", "w") as ini_file:
@@ -67,20 +78,20 @@ class PathPicker(QtGui.QWidget):
 
 class Main(QMainWindow, Ui_MainWindow):
     
-    fwdtype = "series"
-    plottype = "bode"
+    fwdType = "series"
+    plotType = "bode"
     axComplexReal = None
     axComplexImag = None
-    ObsFName = None
-    nfreq = None
-    freqindlow = None
-    freqindhigh = None
-    frequencyorig = None
-    obsorig = None
+    obsFName = None
+    nFreq = None
+    freqIndLow = None
+    freqIndHigh = None
+    frequencyOrig = None
+    obsOrig = None
     t0 = None
     forcePlot = False
 
-    def __init__(ZarcFitWindow, zarc, obs, frequency):
+    def __init__(ZarcFitWindow, pathNameStr, zarc, obs, frequency):
         
         super(Main, ZarcFitWindow).__init__()      
         ZarcFitWindow.setupUi(ZarcFitWindow) 
@@ -103,9 +114,37 @@ class Main(QMainWindow, Ui_MainWindow):
         ZarcFitWindow.freqindhigh = ZarcFitWindow.nfreq
 
         ZarcFitWindow.initializeFigure()
+        ZarcFitWindow.addmplCole()
         
         ZarcFitWindow.t0 = time.time()     
+    
+        # super(Main, ZarcFitWindow).__init__()      
+        # ZarcFitWindow.setupUi(ZarcFitWindow) 
+        # ZarcFitWindow.t0 = time.time()            
+        # ZarcFitWindow.zarc = zarc
+        # ZarcFitWindow.obs = obs
+        # ZarcFitWindow.obsOrig = obs.copy()
+        
+        # ZarcFitWindow.PathPickerWindow = PathPicker(ZarcFitWindow)
+       
+        # # Set-up frequency range
+        # ZarcFitWindow.frequency = frequency
+        # ZarcFitWindow.frequencyOrig = frequency.copy()
+        # ZarcFitWindow.nFreq = ZarcFitWindow.frequency.size
+        # ZarcFitWindow.spinBoxHighFreq.setValue(0)
+        # ZarcFitWindow.labelHighFreq.setText("{:,}".format(ZarcFitWindow.frequencyOrig[0])+" Hz")
+        # ZarcFitWindow.freqIndLow = 0
+        # ZarcFitWindow.spinBoxLowFreq.setValue(frequencyN-1)
+        # ZarcFitWindow.labelLowFreq.setText("{:,}".format(ZarcFitWindow.frequencyOrig[-1])+" Hz")
+        # ZarcFitWindow.freqIndHigh = ZarcFitWindow.nFreq
 
+        # ZarcFitWindow.initializeFigure()
+        
+        #Read in Obs files from path in ZarcFit.ini and plot first file
+        ZarcFitWindow.pathNameStr = pathNameStr
+        ZarcFitWindow.lineEditPath.setText(pathNameStr)
+        ZarcFitWindow.getObsFName()
+       
         # Observed Data File Events
         ZarcFitWindow.actionSelect_Path.triggered.connect(ZarcFitWindow.PickPath)
         ZarcFitWindow.actionSelect_Parameter_File.triggered.connect(ZarcFitWindow.SelectParameterFile)
@@ -343,7 +382,7 @@ class Main(QMainWindow, Ui_MainWindow):
     def updateFigs(ZarcFitWindow):   
         ZarcFitWindow.t1 = time.time()
         elapsedTime = ZarcFitWindow.t1-ZarcFitWindow.t0
-        if elapsedTime > 0.1 or ZarcFitWindow.forcePlot:
+        if elapsedTime > 0.2 or ZarcFitWindow.forcePlot:
             ZarcFitWindow.t0 = ZarcFitWindow.t1
             ZarcFitWindow.forcePlot = False
         
@@ -473,41 +512,47 @@ class Main(QMainWindow, Ui_MainWindow):
         ZarcFitWindow.PathPickerWindow.show()        
     
     def getObsFName(ZarcFitWindow):
-        ZarcFitWindow.ObsFName = []
-        ZarcFitWindow.obsdata = []
-        if ZarcFitWindow.PathPickerWindow.fnamestr:                
-            os.chdir(ZarcFitWindow.PathPickerWindow.fnamestr)                
-            # Read *.z file in the path
-            for file in glob.glob("*.z"):
-                ZarcFitWindow.ObsFName.append(file) 
-                tempobs = np.loadtxt(file, skiprows=11, delimiter=',')
-                ZarcFitWindow.obsdata.append(tempobs)                
-                # print (ZarcFitWindow.PathPickerWindow.fnamestr+ZarcFitWindow.filesep+ZarcFitWindow.filesep+file)
+        ZarcFitWindow.obsFName = []
+        ZarcFitWindow.obsData = []
+        os.chdir(ZarcFitWindow.pathNameStr)
+        
+        # Read *.z file in the path
+        for file in glob.glob("*.z"):
+            ZarcFitWindow.obsFName.append(file) 
+            tempObs = np.loadtxt(file, skiprows=11, delimiter=',')
+            ZarcFitWindow.obsData.append(tempObs)                
+            # print (ZarcFitWindow.PathPickerWindow.pathNameStr+ZarcFitWindow.filesep+ZarcFitWindow.filesep+file)
 
-            ZarcFitWindow.ObsFNamedirsize = len(ZarcFitWindow.ObsFName)
-            # Set maximum filenumber in ui 
-            ZarcFitWindow.horizontalSliderObsFileNumber.setMaximum(ZarcFitWindow.ObsFNamedirsize-1)
-            ZarcFitWindow.spinBoxObsFileNumber.setMaximum(ZarcFitWindow.ObsFNamedirsize-1)
-            ZarcFitWindow.label_LastFile.setText(str(ZarcFitWindow.ObsFNamedirsize-1))
-            
+        ZarcFitWindow.obsFNameDirSize = len(ZarcFitWindow.obsFName)
+        # Set maximum filenumber in ui 
+        ZarcFitWindow.horizontalSliderObsFileNumber.setMaximum(ZarcFitWindow.obsFNameDirSize-1)
+        ZarcFitWindow.spinBoxObsFileNumber.setMaximum(ZarcFitWindow.obsFNameDirSize-1)
+        ZarcFitWindow.label_LastFile.setText(str(ZarcFitWindow.obsFNameDirSize-1)) 
+        #Read in first Obs file
+        ZarcFitWindow.ReadObsFile(0)
+        ZarcFitWindow.spinBoxObsFileNumber.setValue(0)
+        print (ZarcFitWindow.obsFNameDirSize, ZarcFitWindow.pathNameStr)
+        # ZarcFitWindow.forcePlot = True
+        # ZarcFitWindow.updateFigs()
 
-
+ 
     def ReadObsFile(ZarcFitWindow, value):
-        ZarcFitWindow.obs = ZarcFitWindow.obsdata[value][:,4]+ZarcFitWindow.obsdata[value][:,5]*1j
-        ZarcFitWindow.obsorig = ZarcFitWindow.obs.copy()
-        ZarcFitWindow.frequency = ZarcFitWindow.obsdata[value][:,0]
-        ZarcFitWindow.frequencyorig = ZarcFitWindow.frequency.copy()
-        ZarcFitWindow.nfreq = ZarcFitWindow.frequency.size
+        ZarcFitWindow.obs = ZarcFitWindow.obsData[value][:,4]+ZarcFitWindow.obsData[value][:,5]*1j
+        ZarcFitWindow.obsOrig = ZarcFitWindow.obs.copy()
+        ZarcFitWindow.frequency = ZarcFitWindow.obsData[value][:,0]
+        ZarcFitWindow.frequencyOrig = ZarcFitWindow.frequency.copy()
+        ZarcFitWindow.nFreq = ZarcFitWindow.frequency.size
         ZarcFitWindow.spinBoxHighFreq.setValue(0)
-        ZarcFitWindow.labelHighFreq.setText("{:,}".format(ZarcFitWindow.frequencyorig[0])+" Hz")
-        ZarcFitWindow.freqindlow = 0
-        ZarcFitWindow.spinBoxLowFreq.setValue(ZarcFitWindow.nfreq-1)
-        ZarcFitWindow.spinBoxLowFreq.setMaximum(ZarcFitWindow.nfreq-1)
-        ZarcFitWindow.labelLowFreq.setText("{:,}".format(ZarcFitWindow.frequencyorig[-1])+" Hz")
-        ZarcFitWindow.freqindhigh = ZarcFitWindow.nfreq 
+        ZarcFitWindow.labelHighFreq.setText("{:,}".format(ZarcFitWindow.frequencyOrig[0])+" Hz")
+        ZarcFitWindow.freqIndLow = 0
+        ZarcFitWindow.spinBoxLowFreq.setValue(ZarcFitWindow.nFreq-1)
+        ZarcFitWindow.spinBoxLowFreq.setMaximum(ZarcFitWindow.nFreq-1)
+        ZarcFitWindow.labelLowFreq.setText("{:,}".format(ZarcFitWindow.frequencyOrig[-1])+" Hz")
+        ZarcFitWindow.freqIndHigh = ZarcFitWindow.nFreq 
+        ZarcFitWindow.forcePlot = True
         ZarcFitWindow.updateFigs() 
-        print (ZarcFitWindow.ObsFName[value], ZarcFitWindow.nfreq, ZarcFitWindow.frequencyorig[0],ZarcFitWindow.frequencyorig[-1],)
-        ZarcFitWindow.lineEditObsFName.setText(ZarcFitWindow.ObsFName[value])         
+        print (value, ZarcFitWindow.obsFName[value], ZarcFitWindow.nFreq, ZarcFitWindow.frequencyOrig[0],ZarcFitWindow.frequencyOrig[-1],)
+        ZarcFitWindow.lineEditObsFName.setText(ZarcFitWindow.obsFName[value])         
 
     def SelectParameterFile(ZarcFitWindow):
         print ("SelectParameterFile")
@@ -524,28 +569,28 @@ class Main(QMainWindow, Ui_MainWindow):
     # # # Fits # # #
     def updateHighFreq(ZarcFitWindow, value):
         ZarcFitWindow.spinBoxHighFreq.setValue(value)
-        ZarcFitWindow.labelHighFreq.setText("{:,}".format(ZarcFitWindow.frequencyorig[value])+" Hz")        
-        ZarcFitWindow.freqindlow = value
-        ZarcFitWindow.frequency = ZarcFitWindow.frequencyorig[ZarcFitWindow.freqindlow:ZarcFitWindow.freqindhigh]
-        ZarcFitWindow.obs = ZarcFitWindow.obsorig[ZarcFitWindow.freqindlow:ZarcFitWindow.freqindhigh]
+        ZarcFitWindow.labelHighFreq.setText("{:,}".format(ZarcFitWindow.frequencyOrig[value])+" Hz")        
+        ZarcFitWindow.freqIndLow = value
+        ZarcFitWindow.frequency = ZarcFitWindow.frequencyOrig[ZarcFitWindow.freqIndLow:ZarcFitWindow.freqIndHigh]
+        ZarcFitWindow.obs = ZarcFitWindow.obsOrig[ZarcFitWindow.freqIndLow:ZarcFitWindow.freqIndHigh]
         ZarcFitWindow.updateFigs()
 
     def updateLowFreq(ZarcFitWindow, value):
         ZarcFitWindow.spinBoxLowFreq.setValue(value)
-        ZarcFitWindow.labelLowFreq.setText("{:,}".format(ZarcFitWindow.frequencyorig[value])+" Hz")        
-        ZarcFitWindow.freqindhigh = value+1        
-        ZarcFitWindow.frequency = ZarcFitWindow.frequencyorig[ZarcFitWindow.freqindlow:ZarcFitWindow.freqindhigh]        
-        ZarcFitWindow.obs = ZarcFitWindow.obsorig[ZarcFitWindow.freqindlow:ZarcFitWindow.freqindhigh]
+        ZarcFitWindow.labelLowFreq.setText("{:,}".format(ZarcFitWindow.frequencyOrig[value])+" Hz")        
+        ZarcFitWindow.freqIndHigh = value+1        
+        ZarcFitWindow.frequency = ZarcFitWindow.frequencyOrig[ZarcFitWindow.freqIndLow:ZarcFitWindow.freqIndHigh]        
+        ZarcFitWindow.obs = ZarcFitWindow.obsOrig[ZarcFitWindow.freqIndLow:ZarcFitWindow.freqIndHigh]
         ZarcFitWindow.updateFigs()
        
     def AllFreqs(ZarcFitWindow):
         ZarcFitWindow.spinBoxHighFreq.setValue(0)
-        ZarcFitWindow.labelHighFreq.setText("{:,}".format(ZarcFitWindow.frequencyorig[0])+" Hz")        
-        ZarcFitWindow.freqindlow = 0
-        ZarcFitWindow.spinBoxLowFreq.setValue(ZarcFitWindow.nfreq)
-        ZarcFitWindow.labelLowFreq.setText("{:,}".format(ZarcFitWindow.frequencyorig[ZarcFitWindow.nfreq])+" Hz")        
-        ZarcFitWindow.freqindhigh = ZarcFitWindow.nfreq+1     
-        ZarcFitWindow.obs = ZarcFitWindow.obsorig[ZarcFitWindow.freqindlow:ZarcFitWindow.freqindhigh]
+        ZarcFitWindow.labelHighFreq.setText("{:,}".format(ZarcFitWindow.frequencyOrig[0])+" Hz")        
+        ZarcFitWindow.freqIndLow = 0
+        ZarcFitWindow.spinBoxLowFreq.setValue(ZarcFitWindow.nFreq)
+        ZarcFitWindow.labelLowFreq.setText("{:,}".format(ZarcFitWindow.frequencyOrig[ZarcFitWindow.nFreq])+" Hz")        
+        ZarcFitWindow.freqIndHigh = ZarcFitWindow.nFreq+1     
+        ZarcFitWindow.obs = ZarcFitWindow.obsOrig[ZarcFitWindow.freqIndLow:ZarcFitWindow.freqIndHigh]
         ZarcFitWindow.updateFigs()       
         
     def ReadParameters(ZarcFitWindow):
@@ -588,11 +633,11 @@ class Main(QMainWindow, Ui_MainWindow):
         print ("Write Param")
         
     def updateRadiOutSerial(ZarcFitWindow, value):
-        ZarcFitWindow.fwdtype = "series"
+        ZarcFitWindow.fwdType = "series"
         ZarcFitWindow.updateFigs()
 
     def updateRadiOutParallel(ZarcFitWindow, value):
-        ZarcFitWindow.fwdtype = "parallel"
+        ZarcFitWindow.fwdType = "parallel"
         ZarcFitWindow.updateFigs()        
     
     def updateRadiOutBodePlots(ZarcFitWindow, value):
@@ -793,8 +838,7 @@ class Main(QMainWindow, Ui_MainWindow):
        
         
 
-def SetDefaultParameters():
-    
+def SetDefaultParameters():    
     Linf = 1.E-4
     Rinf = 1.E4
     Rh = 1.E5
@@ -814,32 +858,32 @@ def SetDefaultParameters():
 
 ############################################################################### 
 ############################################################################### 
-from whichsystem import whichsystem
 if __name__ == '__main__':
 
+    #Read initial data
     mysys = whichsystem()
     mysys.run()
     scriptPath = os.getcwd()    
     with open(scriptPath+mysys.filesep+"ZarcFit.ini", "r") as ini_file:        
-        path = ini_file.read()
-    print(path)    
-    # ZarcFitWindow.PathPickerWindow.fnamestr = path
-    # ZarcFitWindow.lineEditPath.setText(path)
-    # ZarcFitWindow.getObsFName()       
+        pathNameStr = ini_file.read()
+    pathNameStr = pathNameStr.rstrip('\n')
+
+################  The following lines are unecessary, as Main now starts by reading the pathNameStr directory.    
     path = "../data/HVC2014_10Grenon/"
     fnameobs = "BC13867-A 2014-10-23.z"
     pathobs = path+fnameobs
     temp = np.loadtxt(pathobs, skiprows=11, delimiter=",")
     obs = temp[:,4]+1j*temp[:,5]
-    frequencyAll = temp[:,0].copy()
-    frequencyN = len (frequencyAll)
-    print (frequencyN, frequencyAll[0],frequencyAll[frequencyN-1],)
-    frequency = frequencyAll
+    frequency = temp[:,0].copy()
+    frequencyN = len (frequency)
     zarc = ZarcfitCalculations(obs, frequency)
     Linf, Rinf, Rh, Fh, Ph, Rl, Fl, Pl, Rm, Fm, Pm, Re, Qe, Pef, Pei = SetDefaultParameters()
-    zarc.SetParametersSeries(Linf, Rinf, Rh, Fh, Ph, Rl, Fl, Pl, Rm, Fm, Pm, Re, Qe, Pef, Pei)     
+    zarc.SetParametersSeries(Linf, Rinf, Rh, Fh, Ph, Rl, Fl, Pl, Rm, Fm, Pm, Re, Qe, Pef, Pei) 
+
+    # Start the ZarcFit GUI
     app = QtGui.QApplication(sys.argv)
-    main = Main(zarc, obs, frequency)
-    main.addmplCole()
+    main = Main(pathNameStr, zarc, obs, frequency)
+#    main.addmplCole()  ####### Moved to ZarcFitWindow.__init__
     main.show()
+    
     sys.exit(app.exec_())   
