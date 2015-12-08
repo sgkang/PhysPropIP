@@ -11,6 +11,7 @@ import sys, glob, os, time
 from PyQt4 import QtGui, QtCore
 from PyQt4.uic import loadUiType
 import matplotlib
+matplotlib.use('Qt4Agg')
 from matplotlib.figure import Figure
 import matplotlib.gridspec as gridspec
 import matplotlib.pyplot as plt
@@ -20,7 +21,6 @@ from matplotlib.backends.backend_qt4agg import (
 from ZarcfitCalculations import *
 from whichsystem import whichsystem
 
-matplotlib.use('Qt4Agg')
 matplotlib.rcParams['axes.facecolor']="white"    
 Ui_MainWindow, QMainWindow = loadUiType('ZarcFit2015-12-01.ui')  
 
@@ -90,6 +90,7 @@ class Main(QMainWindow, Ui_MainWindow):
     obsOrig = None
     t0 = None
     forcePlot = False
+    thresholdtime = 0.2
 
     def __init__(ZarcFitWindow, pathNameStr, zarc, obs, frequency):
         
@@ -382,7 +383,7 @@ class Main(QMainWindow, Ui_MainWindow):
     def updateFigs(ZarcFitWindow):   
         ZarcFitWindow.t1 = time.time()
         elapsedTime = ZarcFitWindow.t1-ZarcFitWindow.t0
-        if elapsedTime > 0.2 or ZarcFitWindow.forcePlot:
+        if elapsedTime > ZarcFitWindow.thresholdtime or ZarcFitWindow.forcePlot:
             ZarcFitWindow.t0 = ZarcFitWindow.t1
             ZarcFitWindow.forcePlot = False
         
@@ -864,11 +865,11 @@ if __name__ == '__main__':
     mysys = whichsystem()
     mysys.run()
     scriptPath = os.getcwd()    
+    print(scriptPath+mysys.filesep+"ZarcFit.ini")
     with open(scriptPath+mysys.filesep+"ZarcFit.ini", "r") as ini_file:        
         pathNameStr = ini_file.read()
     pathNameStr = pathNameStr.rstrip('\n')
-
-################  The following lines are unecessary, as Main now starts by reading the pathNameStr directory.    
+    ################  The following lines are unecessary, as Main now starts by reading the pathNameStr directory.    
     path = "../data/HVC2014_10Grenon/"
     fnameobs = "BC13867-A 2014-10-23.z"
     pathobs = path+fnameobs
