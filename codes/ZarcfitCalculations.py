@@ -249,7 +249,7 @@ class ZarcfitCalculations(object):
 				r = dpred-dobs
 				misfit1 = 0.5*np.linalg.norm(np.dot(Wd, r))**2
 				if misfit1 < misfit0:
-					print "misfit:", misfit0, misfit1
+					print ("misfit:", misfit0, misfit1)
 					break
 				elif iterationLs > maxiterLs:
 					break
@@ -264,7 +264,7 @@ class ZarcfitCalculations(object):
 			elif iteration > maxiter:
 				break
 
-			print iteration, misfit1
+			print (iteration, misfit1) 
 			iteration += 1
 			
 		return mall
